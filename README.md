@@ -22,7 +22,88 @@ Docker é uma plataforma de código aberto que permite empacotar, distribuir e e
 
 ## <a name="parte1">1 - Seção 1: Introduction</a>
 
+### 1. Introduction
+### 2. Apresentação detalhada do curso
+### 3. O que é Docker?
 
+![Secao-1-Introduction/img/01-docker-conceitos.png](/Secao-1-Introduction/img/01-docker-conceitos.png)
+
+### 4. Por que Docker?
+
+![Secao-1-Introduction/img/02-docker-conceitos.png](/Secao-1-Introduction/img/02-docker-conceitos.png)
+
+### 5. A Matrix From Hell
+
+![Secao-1-Introduction/img/03-docker-conceitos.png](/Secao-1-Introduction/img/03-docker-conceitos.png)
+
+### 6. Diferença das versões de Docker
+
+![Secao-1-Introduction/img/04-docker-conceitos.png](/Secao-1-Introduction/img/04-docker-conceitos.png)
+
+### 7. Sobre os links de instalação do Docker
+
+Documentação: https://docs.docker.com/
+
+Instalação Windows: https://docs.docker.com/desktop/install/windows-install/
+
+Instalação Linux: https://docs.docker.com/desktop/install/linux-install/
+
+Instalação Mac: https://docs.docker.com/desktop/install/mac-install/
+
+### 8. Instalação Docker Windows
+### 9. Instaçalação Docker Mac
+### 10. Instalação Docker Linux
+### 11. Resolvendo eventuais problemas na instalação
+### 12. Instalação do VS Code
+### 13. Instalação extensão do Docker no VS Code
+### 14. Alternativa ao terminal do Windows
+### 15. Rodando um container no Docker
+
+![Secao-1-Introduction/img/05-docker-conceitos.png](/Secao-1-Introduction/img/05-docker-conceitos.png)
+
+
+```
+$ docker run docker/whalesay cowsay Hello_World
+Unable to find image 'docker/whalesay:latest' locally
+latest: Pulling from docker/whalesay
+[DEPRECATION NOTICE] Docker Image Format v1, and Docker Image manifest version 2, schema 1 support will be removed in an upcoming release. Suggest the author of docker.io/docker/whalesay:latest to upgrade the image to the OCI Format, or Docker Image manifest v2, schema 2. More information at https://docs.docker.com/go/deprecated-image-specs/
+e190868d63f8: Pull complete 
+909cd34c6fd7: Pull complete 
+0b9bfabab7c1: Pull complete 
+a3ed95caeb02: Pull complete 
+00bf65475aba: Pull complete 
+c57b6bcc83e3: Pull complete 
+8978f6879e2f: Pull complete 
+8eed3712d2cf: Pull complete 
+Digest: sha256:178598e51a26abbc958b8a2e48825c90bc22e641de3d31e18aaf55f3258ba93b
+Status: Downloaded newer image for docker/whalesay:latest
+ _____________ 
+< Hello_World >
+ ------------- 
+    \
+     \
+      \     
+                    ##        .            
+              ## ## ##       ==            
+           ## ## ## ##      ===            
+       /""""""""""""""""___/ ===        
+  ~~~ {~~ ~~~~ ~~~ ~~~~ ~~ ~ /  ===- ~~~   
+       \______ o          __/            
+        \    \        __/             
+          \____\______/   
+
+```
+
+### 16. Arquivos do curso
+
+[Link: https://github.com/matheusbattisti/curso_docker](Link: https://github.com/matheusbattisti/curso_docker)
+
+### 17. Slides do Curso
+### 18. Quer conteúdo gratuito e de qualidade?
+
+- [https://www.youtube.com/channel/UCDoFiMhpOnLFq1uG4RL4xag?sub_confirmation=1](https://www.youtube.com/channel/UCDoFiMhpOnLFq1uG4RL4xag?sub_confirmation=1)
+
+### 19. Conclusão da seção
 
 [Voltar ao Índice](#indice)
 
