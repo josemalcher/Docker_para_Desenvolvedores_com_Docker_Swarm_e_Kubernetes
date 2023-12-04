@@ -96,7 +96,7 @@ Status: Downloaded newer image for docker/whalesay:latest
 
 ### 16. Arquivos do curso
 
-[Link: https://github.com/matheusbattisti/curso_docker](Link: https://github.com/matheusbattisti/curso_docker)
+- [https://github.com/matheusbattisti/curso_docker](https://github.com/matheusbattisti/curso_docker)
 
 ### 17. Slides do Curso
 ### 18. Quer conteúdo gratuito e de qualidade?
@@ -112,7 +112,213 @@ Status: Downloaded newer image for docker/whalesay:latest
 
 ## <a name="parte2">2 - Seção 2: Trabalhando com Containers</a>
 
+### 20. Introdução da seção
+### 21. O que são containers?
+### 22. Container X Imagem
+### 23. Rodando um container
+### 24. Verificar containers que já foram executados
 
+```
+$ docker run ubuntu
+Unable to find image 'ubuntu:latest' locally
+latest: Pulling from library/ubuntu
+5e8117c0bd28: Pull complete
+
+$ docker ps -a     
+CONTAINER ID   IMAGE     COMMAND       CREATED          STATUS                      PORTS     NAMES
+ba580abfa768   ubuntu    "/bin/bash"   22 seconds ago   Exited (0) 22 seconds ago             nervous_haslett
+
+$ docker container ls   
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+$ docker container ls -a
+CONTAINER ID   IMAGE     COMMAND       CREATED          STATUS                      PORTS     NAMES
+ba580abfa768   ubuntu    "/bin/bash"   41 seconds ago   Exited (0) 40 seconds ago             nervous_haslett
+
+
+```
+
+### 25. Rodando container no modo iterativo
+
+```
+
+$ docker run -it node
+Unable to find image 'node:latest' locally
+latest: Pulling from library/node
+
+Status: Downloaded newer image for node:latest
+Welcome to Node.js v21.3.0.
+Type ".help" for more information.
+> console.log("Olá Mundo");
+Olá Mundo
+undefined
+> 2+2
+4
+
+```
+
+### 26. Container X VM
+### 27. Rodando container em background (detached)
+
+```
+$ docker run nginx   
+Unable to find image 'nginx:latest' locally
+latest: Pulling from library/nginx
+
+/docker-entrypoint.sh: Configuration complete; ready for start up
+2023/12/04 11:39:27 [notice] 1#1: using the "epoll" event method
+2023/12/04 11:39:27 [notice] 1#1: nginx/1.25.3
+2023/12/04 11:39:27 [notice] 1#1: built by gcc 12.2.0 (Debian 12.2.0-14)
+2023/12/04 11:39:27 [notice] 1#1: OS: Linux 5.15.133.1-microsoft-standard-WSL2
+2023/12/04 11:39:27 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2023/12/04 11:39:27 [notice] 1#1: start worker processes
+2023/12/04 11:39:27 [notice] 1#1: start worker process 29
+2023/12/04 11:39:27 [notice] 1#1: start worker process 30
+
+```
+
+```
+$ docker run -d nginx
+df452cc79f263d41c23fe78a0563fe74d41dcde085693f0cbdc81dc8b1889a64
+
+$ docker ps          
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES
+df452cc79f26   nginx     "/docker-entrypoint.…"   31 seconds ago   Up 30 seconds   80/tcp    vigorous_lederberg
+
+```
+
+### 28. Expondo porta de container
+
+```
+$ docker run -d -p 80:80 nginx 
+db784140efc1ea098c25cb788b0882838aa2dcc413fb2ac7fa7ff93f7fd786d4
+
+$ docker ps                     
+CONTAINER ID   IMAGE     COMMAND                  CREATED              STATUS              PORTS                NAMES
+db784140efc1   nginx     "/docker-entrypoint.…"   About a minute ago   Up About a minute   0.0.0.0:80->80/tcp   vigilant_chebyshev
+
+$ docker stop vigilant_chebyshev                  
+vigilant_chebyshev
+```
+
+```
+$ docker run -d -p 3000:80 nginx
+79a4452b3defe977fe92e46ca1dd7bba8ba992a31b23c21d838a335a691d99f3
+
+$ docker ps                     
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS                  NAMES
+79a4452b3def   nginx     "/docker-entrypoint.…"   29 seconds ago   Up 28 seconds   0.0.0.0:3000->80/tcp   intelligent_varahamihira
+
+$ docker stop intelligent_varahamihira                  
+intelligent_varahamihira
+
+
+```
+
+### 29. Parando containers
+
+```
+$ docker ps                           
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS                          PORTS     NAMES
+79a4452b3def   nginx     "/docker-entrypoint.…"   2 minutes ago   Exited (0) About a minute ago             intelligent_varahamihira
+db784140efc1   nginx     "/docker-entrypoint.…"   4 minutes ago   Exited (0) 3 minutes ago                  vigilant_chebyshev
+
+```
+
+
+### 30. Reiniciando containers
+
+```
+$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS                     PORTS     NAMES
+79a4452b3def   nginx     "/docker-entrypoint.…"   3 minutes ago   Exited (0) 2 minutes ago             intelligent_varahamihira
+db784140efc1   nginx     "/docker-entrypoint.…"   5 minutes ago   Exited (0) 4 minutes ago             vigilant_chebyshev
+
+$ docker start vigilant_chebyshev     
+vigilant_chebyshev
+
+$ docker ps                      
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS          PORTS                NAMES
+db784140efc1   nginx     "/docker-entrypoint.…"   5 minutes ago   Up 18 seconds   0.0.0.0:80->80/tcp   vigilant_chebyshev
+
+
+```
+
+
+### 31. Definindo nome para um container
+
+```
+$ docker run -d -p 80:80 --name nginx_app nginx
+288b3d7a078eb7c6e652a412e1c74320643c2fc0b03748
+
+$ docker ps -a                                 
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS                          PORTS                NAMES
+288b3d7a078e   nginx     "/docker-entrypoint.…"   7 seconds ago    Up 6 seconds                    0.0.0.0:80->80/tcp   nginx_app
+79a4452b3def   nginx     "/docker-entrypoint.…"   15 minutes ago   Exited (0) 15 minutes ago                            intelligent_varahamihira
+db784140efc1   nginx     "/docker-entrypoint.…"   17 minutes ago   Exited (0) About a minute ago                        vigilant_chebyshev
+
+$ docker stop nginx_app                  
+nginx_app
+
+```
+
+### 32. Acessando os logs de um container
+
+```
+$ docker logs nginx_app
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+/docker-entrypoint.sh: Configuration complete; ready for start up
+
+```
+
+
+### 33. Removendo container
+
+```
+
+$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS                      PORTS     NAMES
+288b3d7a078e   nginx     "/docker-entrypoint.…"   3 minutes ago    Exited (0) 3 minutes ago              nginx_app
+79a4452b3def   nginx     "/docker-entrypoint.…"   19 minutes ago   Exited (0) 18 minutes ago             intelligent_varahamihira
+db784140efc1   nginx     "/docker-entrypoint.…"   21 minutes ago   Exited (0) 4 minutes ago              vigilant_chebyshev
+
+$ docker rm vigilant_chebyshev                 
+vigilant_chebyshev
+
+$ docker ps -a                
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS                      PORTS     NAMES
+288b3d7a078e   nginx     "/docker-entrypoint.…"   4 minutes ago    Exited (0) 3 minutes ago              nginx_app
+79a4452b3def   nginx     "/docker-entrypoint.…"   19 minutes ago   Exited (0) 19 minutes ago             intelligent_varahamihira
+
+
+$ docker run -d -p 80:80 --name nginx_parar_forcado nginx
+973be2457ee704a0b0e5408638b9c62d7dddc7cab6c27ea55dbeebea17b3
+
+$ docker ps                                              
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS         PORTS                NAMES
+973be2457ee7   nginx     "/docker-entrypoint.…"   9 seconds ago   Up 8 seconds   0.0.0.0:80->80/tcp   nginx_parar_forcado
+
+$ docker rm nginx_parar_forcado                          
+Error response from daemon: You cannot remove a running container 973be2457ee7040ab6c27ea5f2ce5dbeebea17b3. 
+Stop the container before attempting removal or force remove
+
+$ docker rm nginx_parar_forcado -f
+nginx_parar_forcado
+
+```
+
+
+### 34. Conclusão da seção
 
 [Voltar ao Índice](#indice)
 
