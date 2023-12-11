@@ -327,7 +327,309 @@ nginx_parar_forcado
 
 ## <a name="parte3">3 - Seção 3: Criando imagens e avançando em containers</a>
 
+### 35 Introdução da seção
+### 36 O que é uma imagem?
+### 37 Como escolher uma imagem
 
+```
+$ docker run -d -p 80:80 --name meu_apache httpd         
+Unable to find image 'httpd:latest' locally
+latest: Pulling from library/httpd
+
+```
+
+
+### 38 Criando a nossa primeira imagem
+### 39 Rodando a nossa imagem em um container
+
+Secao-3-CriandoImagensEavancandoEmContainers/aula38/Dockerfile
+
+```dockerfile
+From node
+
+WORKDIR /app
+
+COPY package*.json .
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["node", "app.js"]
+```
+
+```
+$ docker build .        
+[+] Building 2.4s (10/10) FINISHED                                                                                                                              docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                      0.0s
+ => => transferring dockerfile: 158B                                                                                                                                      0.0s 
+ => [internal] load .dockerignore                                                                                                                                         0.0s 
+ => => transferring context: 2B                                                                                                                                           0.0s 
+ => [internal] load metadata for docker.io/library/node:latest                                                                                                            0.0s 
+ => [1/5] FROM docker.io/library/node                                                                                                                                     0.1s 
+ => [internal] load build context                                                                                                                                         0.1s 
+ => => transferring context: 2.16MB                                                                                                                                       0.1s 
+ => [2/5] WORKDIR /app                                                                                                                                                    0.0s
+ => [3/5] COPY package*.json .                                                                                                                                            0.0s 
+ => [4/5] RUN npm install                                                                                                                                                 1.9s
+ => [5/5] COPY . .                                                                                                                                                        0.1s
+ => exporting to image                                                                                                                                                    0.1s
+ => => exporting layers                          
+```
+
+```
+$ docker image ls
+REPOSITORY                   TAG       IMAGE ID       CREATED         SIZE
+<none>                       <none>    519e37efe7f2   2 minutes ago   1.11GB
+
+```
+
+```
+$ docker run -d -p 3000:3000 --name meu_node 519e37efe7f2
+5902b38a21d9e169736e765d1468af1d2c89456ca81d47a2f6509406c3fca797
+
+```
+
+### 40 Alterando a nossa imagem
+### 41 Cache de camadas
+### 42 Fazendo o download de imagens
+
+```
+$ docker pull python
+Using default tag: latest
+latest: Pulling from library/python
+90e5e7d8b87a: Already exists                                                                                                                                                   
+27e1a8ca91d3: Already exists                                                                                                                                                   
+d3a767d1d12e: Already exists                                                                                                                                                   
+711be5dc5044: Already exists                                                                                                                                                   
+45df5ffe8c3b: Pull complete
+cdc2c85f810b: Pull complete
+f6a11d2ee0cf: Pull complete
+8db447a102db: Pull complete
+Digest: sha256:6d7fa2d5653e1d0eb464a672ded01f973e49e4a7ded59703c7bdcf6b92eac736
+Status: Downloaded newer image for python:latest
+
+$ docker images
+REPOSITORY                   TAG       IMAGE ID       CREATED         SIZE
+python                       latest    58a8f3dcd68a   3 days ago      1.02GB
+
+```
+
+```
+$ docker run -it python                                   
+Python 3.12.1 (main, Dec  9 2023, 00:10:18) [GCC 12.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+
+```
+
+### 43 Mais informações sobre os comandos
+
+```
+$ docker run --help    
+
+Usage:  docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+
+Create and run a new container from an image
+
+Aliases:
+  docker container run, docker run
+
+Options:
+      --add-host list                  Add a custom host-to-IP mapping (host:ip)
+      --annotation map                 Add an annotation to the container (passed through to the OCI runtime) (default map[])
+
+(...)
+```
+
+### 44 Multiplas aplicações do mesmo container
+
+```
+$ docker run -d -p 3000:3000 --name meu_node1 53b40ce104f5
+2fd3668c4f39fbaab07939211a8ded00e033cb719a3de6a3387c2c2030c0
+
+$ docker run -d -p 4000:3000 --name meu_node2 53b40ce104f5
+cc44716c185663b87e8a0493ed0934663e96040838017c5b81ea66bde5ce2e
+
+$ docker run -d -p 5000:3000 --name meu_node3 53b40ce104f5
+376dac8b6a6ee18c7b48d6183835d4312047a2cf3ab2ec084e5d50dca9beb7
+
+$ docker ps                                               
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                    NAMES
+376dac8b6a6e   53b40ce104f5   "docker-entrypoint.s…"   7 seconds ago    Up 6 seconds    0.0.0.0:5000->3000/tcp   meu_node3
+cc44716c1856   53b40ce104f5   "docker-entrypoint.s…"   15 seconds ago   Up 14 seconds   0.0.0.0:4000->3000/tcp   meu_node2
+2fd3668c4f39   53b40ce104f5   "docker-entrypoint.s…"   22 seconds ago   Up 22 seconds   0.0.0.0:3000->3000/tcp   meu_node1
+
+
+```
+
+### 45 Nomeando imagens
+
+```
+$ docker images
+REPOSITORY                   TAG       IMAGE ID       CREATED         SIZE
+<none>                       <none>    53b40ce104f5   2 hours ago     1.11GB
+
+
+$ docker tag 53b40ce104f5 minha_imagem 
+
+
+$ docker images                       
+REPOSITORY                   TAG       IMAGE ID       CREATED         SIZE
+minha_imagem                 latest    53b40ce104f5   2 hours ago     1.11GB
+
+
+$ docker tag 53b40ce104f5 minha_imagem:minhatag  
+
+
+$ docker images                                
+REPOSITORY                   TAG        IMAGE ID       CREATED         SIZE
+minha_imagem                 latest     53b40ce104f5   2 hours ago     1.11GB
+minha_imagem                 minhatag   53b40ce104f5   2 hours ago     1.11GB
+
+```
+
+### 46 Nomeando imagem no build
+
+```
+$ docker build -t meunode_diferente:minhatag_dif .
+[+] Building 0.1s (10/10) FINISHED                                                                                                                              docker:default
+ => [internal] load .dockerignore                                        
+```
+
+```
+$ docker images                                           
+REPOSITORY                   TAG            IMAGE ID       CREATED         SIZE
+meunode_diferente            minhatag_dif   53b40ce104f5   2 hours ago     1.11GB
+
+```
+
+### 47 Reiniciando container com interatividade
+
+```
+$ docker ps -a            
+CONTAINER ID   IMAGE                            COMMAND                  CREATED              STATUS                        PORTS     NAMES
+3ef207eaba81   meunode_diferente:minhatag_dif   "docker-entrypoint.s…"   About a minute ago   Exited (137) 11 seconds ago             zen_fermat
+
+
+$ docker stop zen_fermat
+zen_fermat
+
+
+$ docker start -i zen_fermat
+executando na post: 3000
+
+```
+
+### 48 Removendo imagens
+
+```
+$ docker images                               
+REPOSITORY                   TAG            IMAGE ID       CREATED         SIZE
+meunode_diferente            minhatag_dif   53b40ce104f5   2 hours ago     1.11GB
+minha_imagem                 latest         53b40ce104f5   2 hours ago     1.11GB
+minha_imagem                 minhatag       53b40ce104f5   2 hours ago     1.11GB
+<none>                       <none>         519e37efe7f2   3 hours ago     1.11GB
+python                       latest         58a8f3dcd68a   3 days ago      1.02GB
+
+
+$ docker rmi 58a8f3dcd68a                                  
+Untagged: python:latest
+Untagged: python@sha256:6d7fa2d53e1d0eb464a672ded01f973e49e4a7ded59703c7bdcf6b92eac736
+Deleted: sha256:58a8fcd68a25102665617db6b9cc605dac7e5b84a874c456692513d12c990f
+Deleted: sha256:02e6775da0f266197abbcae8cbc8885834c8389127fed9e6d7ea50ea99315b
+Deleted: sha256:f1b91c1c68d96eb38f75e8b1a06253d209e440bcf44c621847ec5c4104c9e7
+Deleted: sha256:4f0fb38887133f9ce86f04a374cb619a5ac0e8593d1be1fe9325876e870dc6ad
+Deleted: sha256:88eb35f1669680c1beba9fd7f283b7c415e27ed1d711dc4575397085f3a754
+
+$ docker rmi meunode_diferente:minhatag_dif
+Untagged: meunode_diferente:minhatag_dif
+
+
+$ docker images                            
+REPOSITORY                   TAG        IMAGE ID       CREATED         SIZE
+minha_imagem                 latest     53b40ce104f5   2 hours ago     1.11GB
+minha_imagem                 minhatag   53b40ce104f5   2 hours ago     1.11GB
+<none>                       <none>     519e37efe7f2   3 hours ago     1.11GB
+
+```
+
+
+### 49 Remoção de imagens e containers não utilizados
+
+```
+$ docker system prune --help
+
+Usage:  docker system prune [OPTIONS]
+
+Remove unused data
+
+Options:
+  -a, --all             Remove all unused images not just dangling ones
+      --filter filter   Provide filter values (e.g. "label=<key>=<value>")
+  -f, --force           Do not prompt for confirmation
+      --volumes         Prune anonymous volumes
+
+
+$ docker system prune       
+WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all dangling images
+  - all dangling build cache
+
+Are you sure you want to continue? [y/N] y
+Deleted Containers:
+3ef207eaba819f9f454f2fba0132fff0845eacf7bbc284448d147e95a2be18cc
+
+
+Total reclaimed space: 5.736GB
+
+
+```
+
+
+### 50 Removendo container após utilização
+
+```
+$ docker run -d -p 3000:3000 --name meu_node --rm minha_imagem
+454ba9ce0ae1780defbc762305d8a0a247c08bae66e059f30853a0ce5a866ced
+
+
+$ docker ps                                                   
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                    NAMES
+454ba9ce0ae1   minha_imagem   "docker-entrypoint.s…"   20 seconds ago   Up 20 seconds   0.0.0.0:3000->3000/tcp   meu_node
+
+
+$ docker stop 454ba9ce0ae1          
+454ba9ce0ae1
+
+
+$ docker ps -a            
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+
+```
+
+
+### 51 Copiando arquivos do container
+
+```
+
+```
+
+
+### 52 Verificando processamento do container
+### 53 Inspecionando container
+### 54 Verificando processamento do Docker
+### 55 Autenticação no terminal
+### 56 Encerrando autenticação
+### 57 Enviando imagens para o Hub
+### 58 Atualizando imagens no Hub
+### 59 Utilizando nossa imagem
+### 60 Conclusão da seção
 
 [Voltar ao Índice](#indice)
 
