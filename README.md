@@ -617,18 +617,174 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ### 51 Copiando arquivos do container
 
 ```
+$ docker run -d -p 3000:3000 --name meu_node --rm minha_imagem
+c247d7df3ba00669880e6233f61ac6aadf57391c9ea0347229f8ae37ad894ec1
+
+$ docker ps                                                   
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                    NAMES
+c247d7df3ba0   minha_imagem   "docker-entrypoint.s…"   37 seconds ago   Up 36 seconds   0.0.0.0:3000->3000/tcp   meu_node
+
+$ docker cp meu_node:/app/app.js ./copia/
+Successfully copied 2.05kB to /home/josemalcher/workspaces/Docker_para_Desenvolvedores_com_Docker_Swarm_e_Kubernetes/Secao-3-CriandoImagensEavancandoEmContainers/aula38/copia/
 
 ```
 
 
 ### 52 Verificando processamento do container
+
+```
+$ docker ps                                                   
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS         PORTS                    NAMES
+a39792385b61   minha_imagem   "docker-entrypoint.s…"   10 seconds ago   Up 9 seconds   0.0.0.0:3000->3000/tcp   meu_node
+
+$ docker top meu_node                          
+UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
+root                3798                3777                0                   17:22               ?                   00:00:00            node app.js
+
+
+```
+
 ### 53 Inspecionando container
+
+```
+$ docker inspect meu_node                                                                                                                                   1        
+[
+    {
+        "Id": "a39792385b6136ddee266895c269a4a82c8803d5b81bbc6f3cb965e4b4e30b11",
+        "Created": "2023-12-11T17:22:20.458667148Z",
+        "Path": "docker-entrypoint.sh",
+        "Args": [
+            "node",
+            "app.js"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+(...)
+```
+
 ### 54 Verificando processamento do Docker
+
+```
+$ docker stats              
+CONTAINER ID   NAME       CPU %     MEM USAGE / LIMIT     MEM %     NET I/O       BLOCK I/O   PIDS
+a39792385b61   meu_node   0.00%     14.56MiB / 23.39GiB   0.06%     1.16kB / 0B   0B / 0B     10
+CONTAINER ID   NAME       CPU %     MEM USAGE / LIMIT     MEM %     NET I/O       BLOCK I/O   PIDS
+a39792385b61   meu_node   0.00%     14.56MiB / 23.39GiB   0.06%     1.16kB / 0B   0B / 0B     10
+CONTAINER ID   NAME       CPU %     MEM USAGE / LIMIT     MEM %     NET I/O       BLOCK I/O   PIDS
+
+```
+
 ### 55 Autenticação no terminal
+
+```
+$ docker login         
+Log in with your Docker ID or email address to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com/ to create one.
+You can log in with your password or a Personal Access Token (PAT). Using a limited-scope PAT grants better security and is required for organizations using SSO. Learn more at https://docs.docker.com/go/access-tokens/
+Username: 
+Password:
+
+```
+
 ### 56 Encerrando autenticação
+
+```
+$ docker logout
+```
+
 ### 57 Enviando imagens para o Hub
+
+- docker push josemalcher/nodeteste:tagname
+
+```
+$ docker build -t josemalcher/nodeteste .
+[+] Building 0.2s (10/10) FINISHED                                                                                                                              docker:default
+ => [internal] load .dockerignore                                                                                                                                         0.0s
+ => => transferring context: 2B                                                                                                                                           0.0s 
+ => [internal] load build definition from Dockerfile                                                                                                                      0.0s 
+ => => transferring dockerfile: 158B                                                                                                                                      0.0s 
+ => [internal] load metadata for docker.io/library/node:latest                                                                                                            0.0s 
+ => [1/5] FROM docker.io/library/node                                                                                                                                     0.0s 
+ => [internal] load build context                                                                                                                                         0.0s 
+ => => transferring context: 25.43kB                                                                                                                                      0.0s 
+ => CACHED [2/5] WORKDIR /app                                                                                                                                             0.0s 
+ => CACHED [3/5] COPY package*.json .                                                                                                                                     0.0s 
+ => CACHED [4/5] RUN npm install                                                                                                                                          0.0s 
+ => [5/5] COPY . .                                                                                                                                                        0.0s 
+ => exporting to image                                                                                                                                                    0.0s 
+ => => exporting layers                                                                                                                                                   0.0s 
+ => => writing image sha256:81aabb446dcfbec32bbef757e82af9d37b2ab27b79a5588cf7ca3e0a0a222afd                                                                              0.0s
+ => => naming to docker.io/josemalcher/nodeteste                                                                                                                          0.0s 
+
+```
+
+```
+$ docker push josemalcher/nodeteste                  
+Using default tag: latest
+The push refers to repository [docker.io/josemalcher/nodeteste]
+80a01bfd45f7: Pushed
+caacfd01ce06: Pushed
+0b5ede946b98: Pushed
+f6a3a6813717: Pushed
+efc82e49b7ad: Mounted from library/node
+
+```
+
 ### 58 Atualizando imagens no Hub
+
+```dockerfile
+From node
+WORKDIR /src
+COPY package*.json .
+```
+
+```
+$ docker build -t josemalcher/nodeteste:novaversao .
+[+] Building 2.0s (10/10) FINISHED                                                                                                                              docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                      0.0s
+ => => transferring dockerfile: 158B                                                                                                                                      0.0s 
+ => [internal] load .dockerignore                                                                                                                                         0.0s 
+ => => transferring context: 2B                                                                                                                                           0.0s 
+ => [internal] load metadata for docker.io/library/node:latest                                                                                                            0.0s 
+ => CACHED [1/5] FROM docker.io/library/node                                                                                                                              0.0s 
+ => [internal] load build context                                                                                                                                         0.0s 
+ => => transferring context: 344B                                                                                                                                         0.0s 
+ => [2/5] WORKDIR /src                                                                                                                                                    0.0s 
+ => [3/5] COPY package*.json .                                                                                                                                            0.0s 
+ => [4/5] RUN npm install                                                                                                                                                 1.7s 
+ => [5/5] COPY . .                                                                                                                                                        0.0s
+ => exporting to image                                                                                                                                                    0.1s
+ => => exporting layers                                                                                                                                                   0.1s
+ => => writing image sha256:d317d1e03e0ad633005d55a6f4c78006349b67adf86c74656e2a223830ee97a9                                                                              0.0s
+ => => naming to docker.io/josemalcher/nodeteste:novaversao     
+```
+
+```
+$ docker push josemalcher/nodeteste:novaversao      
+The push refers to repository [docker.io/josemalcher/nodeteste]
+efa1cd3a7baf: Pushing [==================================================>]  32.26kB
+2187b1c060ff: Pushing [==================================================>]  5.794MB
+c609aa43d4ee: Pushing [==================================================>]  27.65kB
+811de72603c4: Pushing  1.536kB
+efc82e49b7ad: Layer already exists
+0503e57045c1: Layer already exists
+
+```
+
 ### 59 Utilizando nossa imagem
+
+```
+$ docker pull josemalcher/nodeteste:novaversao
+novaversao: Pulling from josemalcher/nodeteste
+Digest: sha256:4ebc142d81b93f1c4505c733276f003a5c7a059d85dc246b9f424610aa4a31b3
+Status: Image is up to date for josemalcher/nodeteste:novaversao
+
+
+$ docker run -d -p 3000:3000 --name minha_imagem --rm josemalcher/nodeteste:novaversao
+7664b73f4ae55e193eb133a9d28de00ab33fee3d5785cc16157f6a725d369031
+
+```
+
 ### 60 Conclusão da seção
 
 [Voltar ao Índice](#indice)
