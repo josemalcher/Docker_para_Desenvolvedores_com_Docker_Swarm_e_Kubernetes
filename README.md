@@ -794,7 +794,230 @@ $ docker run -d -p 3000:3000 --name minha_imagem --rm josemalcher/nodeteste:nova
 
 ## <a name="parte4">4 - Seção 4: Introduzindo volumes aos nossos containers</a>
 
+### 61 Introdução da seção
+### 62 O que são volumes?
 
+![](/imgs/volume_1702472413399.jpg)
+
+### 63 Tipos de volumes
+
+![](/imgs/vol_tipos_1702472459777.jpg)
+
+### 64 Criando o projeto para trabalhar com Volumes
+
+- Secao-4-IntroduzindoVolumes/aula64/Dockerfile
+
+```
+$ docker build -t phpmessages .
+[+] Building 14.7s (10/10) FINISHED                                                                                                                             docker:default
+ => [internal] load .dockerignore                                                                                                                                         0.0s
+ => => transferring context: 2B                                                                                                                                           0.0s 
+ => [internal] load build definition from Dockerfile                                                                                                                      0.0s 
+ => => transferring dockerfile: 147B                                                                                                                                      0.0s 
+ => [internal] load metadata for docker.io/library/php:8-apache                                                                                                           2.6s 
+ => [auth] library/php:pull token for registry-1.docker.io      
+
+
+
+$ docker run -d -p 80:80 --name phpmessages_container phpmessages                     
+b1fee503e973a3b9c5484bc90a813cff5942242064d3f3cf8c670d31c9b3e
+
+
+
+$ docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED          STATUS          PORTS                NAMES
+b1fee503e973   phpmessages   "docker-php-entrypoi…"   58 seconds ago   Up 57 seconds   0.0.0.0:80->80/tcp   phpmessages_container
+
+```
+
+
+### 65 O problema da persistência de dados
+### 66 Volumes anônimos
+
+![](/imgs/vol_anonimo_1702487220704.jpg)
+
+```
+$ docker run -d -p 80:80 --name phpmessages_container --rm -v /data phpmessages          
+b29547ba59e306c7586fe7d79f6b34e1b815512f199854080e44223e0a156236
+
+
+$ docker inspect phpmessages_container                                         
+[
+    {
+        ],
+            "Image": "phpmessages",
+            "Volumes": {
+                "/data": {}
+            },
+            "WorkingDir": "/var/www/html",
+(...)
+
+
+$ docker volume ls                       
+DRIVER    VOLUME NAME
+local     0c0d219608ef3fe5a386ed2fdaf993928d5c180f9e9b47ab4dde922072fa0d2f
+```
+
+### 67 Volumes nomeados
+
+![](/imgs/vol_name_1702487700695.jpg)
+
+```
+$ docker ps                        
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+
+
+$ docker run -d -p 80:80 --name phpmessages_container -v phpvolume:/var/www/html/messages --rm  phpmessages
+9d6df0a1515b2118ba2add81c41c2b800cbb96be33f00e02dca6781985227c55
+
+
+
+$ docker volume ls                                                                                         
+DRIVER    VOLUME NAME
+local     phpvolume
+
+```
+
+### 68 Bind mounts
+
+![](/imgs/vol_bind_1702488076847.jpg)
+
+```
+$ docker run -d -p 80:80 --name phpmessages_container -v $PWD/messages:/var/www/html/messages --rm  phpmessages
+be3d09f93320905d8b514cfdce48059e89711c88666a577d6a49f2e2a8fba740
+
+```
+
+### 69 O poder extra do Bind Mount
+
+![](/imgs/bind_mount_1702905910433.png)
+
+```
+$ docker run -d -p 80:80 --name phpmessages_container -v $PWD:/var/www/html --rm  phpmessages
+aad4aa35a12e35f9e808fa2bddf9486f389adc2ae9ac3901e99035a2a
+
+```
+
+### 70 Criando volumes manualmente
+
+![](/imgs/create_vol1_1702906216687.png)
+
+```
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     admin-filamentv2_sail-mysql
+local     api-03-app_sail-mysql
+
+
+$ docker volume create volume_teste01
+volume_teste01
+
+$ docker volume ls            
+DRIVER    VOLUME NAME
+local     volume_teste01
+local     volume_teste02
+
+
+$ docker run -d -p 80:80 --name phpmessages_container -v volume_teste2:/var/www/html --rm  phpmessages
+df5136615074546636e8c6781c5ab75d2104e4e0e94e300928cb4a94c98
+
+```
+
+### 71 Listando volumes
+
+![](/imgs/vol_ls1702907178281.jpg)
+
+```
+$ docker volume ls                   
+DRIVER    VOLUME NAME
+local     volume_teste01
+local     volume_teste2
+local     volume_teste02
+
+$ docker run -d -p 80:80 --name phpmessages_container -v --rm  phpmessages
+01c20f52689f33564fdf923b878029cd780bd711cdc069297afe1f62f3197d79
+
+
+$ docker volume ls                                                        
+DRIVER    VOLUME NAME
+local     c8be262721290d3497a79253ee393e77448e80c7e3f5e08525209110d5c05c5e
+
+
+```
+
+### 72 Inspecionando volumes
+
+![](/imgs/check_vol1702907322815.jpg)
+
+
+```
+$ docker volume inspect phpvolume
+[
+    {
+        "CreatedAt": "2023-12-13T17:16:57Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/phpvolume/_data",
+        "Name": "phpvolume",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+
+```
+
+
+### 73 Removendo volumes
+
+![](/imgs/remove_vol_1702907456377.jpg)
+
+```
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     volume_teste01
+local     volume_teste2
+local     volume_teste02
+
+
+$ docker volume rm volume_teste01
+volume_teste01
+
+```
+
+
+
+### 74 Remoção de volumes em massa
+
+![](/imgs/remove_vol_mass_1702907593743.jpg)
+
+```
+$ docker volume ls                       
+DRIVER    VOLUME NAME
+local     volume_teste2
+local     volume_teste02
+
+$ docker volume prune
+WARNING! This will remove anonymous local volumes not used by at least one container.
+Are you sure you want to continue? [y/N] 
+Total reclaimed space: 0B
+
+```
+
+### 75 Volume somente leitura
+
+![](/imgs/vol_leitura_1702910218827.jpg)
+
+```
+$ docker run -d -p 80:80 --name phpmessages_container -v phpvolume:/var/www/html:ro --rm  phpmessages
+01716987852ac35cd33c3ab07df479dfcc817237d8aa95e22
+
+```
+
+
+
+
+### 76 Conclusão da seção
 
 [Voltar ao Índice](#indice)
 
