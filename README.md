@@ -1026,7 +1026,358 @@ $ docker run -d -p 80:80 --name phpmessages_container -v phpvolume:/var/www/html
 
 ## <a name="parte5">5 - Seção 5: Conectando containers com Networks</a>
 
+### 77 Introdução da seção
+### 78 Erro ao instalar python-pip
 
+```
+
+E: Package 'python-pip' has no installation candidate
+
+Caso tenham o mesmo problema: basta trocar python-pip para python3-pip
+
+```
+
+### 79 O que são networks?
+
+![](/imgs/networks01.png)
+
+### 80 Tipos de conexão
+
+![](/imgs/networks02.png)
+
+### 81 Tipos de driver
+
+![](/imgs/networks03.png)
+
+### 82 Listando networks
+
+![](/imgs/networks04.png)
+
+```
+$ docker network ls                
+NETWORK ID     NAME      DRIVER    SCOPE
+3b2a2576962a   bridge    bridge    local
+8110e3435b0c   host      host      local
+7f0a4681e997   none      null      local
+
+```
+
+### 83 Criando redes
+
+![](/imgs/networks05.png)
+
+```
+$ docker network create minharedeteste
+794883b7e861662801ae57ad16247b4f8f7479741316a0eebefdb2bdce9c0718
+
+$ docker network ls                   
+NETWORK ID     NAME             DRIVER    SCOPE
+3b2a2576962a   bridge           bridge    local
+8110e3435b0c   host             host      local
+794883b7e861   minharedeteste   bridge    local
+7f0a4681e997   none             null      local
+
+$ docker network create -d macvlan minhamacvlanteste
+2a0f3f25fee9fe0f8b54c5f0724923aef0130b54ba2a935e9d9b79f5aa4a1781
+
+$ docker network ls                                      
+NETWORK ID     NAME                DRIVER    SCOPE
+3b2a2576962a   bridge              bridge    local
+8110e3435b0c   host                host      local
+2a0f3f25fee9   minhamacvlanteste   macvlan   local
+794883b7e861   minharedeteste      bridge    local
+7f0a4681e997   none                null      local
+
+```
+
+### 84 Removendo redes
+
+![](/imgs/networks06.png)
+
+```
+$ docker network rm minhamacvlanteste
+minhamacvlanteste
+
+$ docker network rm minharedeteste                 
+minharedeteste
+
+$ docker network ls                  
+NETWORK ID     NAME      DRIVER    SCOPE
+3b2a2576962a   bridge    bridge    local
+8110e3435b0c   host      host      local
+7f0a4681e997   none      null      local
+
+```
+
+### 85 Removendo redes não utilizadas
+
+![](/imgs/networks07.png)
+
+```
+$ docker network ls       
+NETWORK ID     NAME      DRIVER    SCOPE
+3b2a2576962a   bridge    bridge    local
+8110e3435b0c   host      host      local
+7f0a4681e997   none      null      local
+9b6677c8991f   t1        bridge    local
+5ae2830a02c8   t2        bridge    local
+0e12541fc7ca   t3        bridge    local
+
+$ docker network prune
+WARNING! This will remove all custom networks not used by at least one container.
+Are you sure you want to continue? [y/N] y
+Deleted Networks:
+t1
+t2
+t3
+
+
+```
+
+### 86 Instalando o Postman
+### 87 Conexão externa
+
+![](/imgs/networks08.png)
+
+```dockerfile
+FROM python:3
+
+RUN apt-get update -y && \
+    apt-get install -y python3-pip python3-dev
+
+WORKDIR /app
+
+RUN pip install Flask
+RUN pip install requests
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["python3", "./app.py"]
+```
+
+```python
+import flask
+from flask import request, json, jsonify
+import requests
+
+app = flask.Flask(__name__)
+app.config["DEBUG"] = True
+
+@app.route("/", methods=["GET"])
+def index():
+    data = requests.get('https://randomuser.me/api')
+    return jsonify(data.json())
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0",debug =True, port = "5000")
+```
+
+```
+$ docker run -d -p 5000:5000 --name flaskexternocontainer --rm flaskexterna
+```
+
+### 88 Conexão com máquina host
+
+![/imgs/networks09.png](/imgs/networks09.png)
+
+```python
+import flask
+from flask import request, json, jsonify
+import requests
+import flask_mysqldb
+from flask_mysqldb import MySQL
+
+app = flask.Flask(__name__)
+app.config["DEBUG"] = True
+
+app.config['MYSQL_HOST'] = 'host.docker.internal'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_DB'] = 'flaskhost'
+
+mysql = MySQL(app)
+
+@app.route("/", methods=["GET"])
+def index():
+  data = requests.get('https://randomuser.me/api')
+  return data.json()
+
+@app.route("/inserthost", methods=['POST'])
+def inserthost():
+  data = requests.get('https://randomuser.me/api').json()
+  username = data['results'][0]['name']['first']
+
+  cur = mysql.connection.cursor()
+  cur.execute("""INSERT INTO users(name) VALUES(%s)""", (username,))
+  mysql.connection.commit()
+  cur.close()
+
+  return username
+
+if __name__ == "__main__":
+  app.run(host="0.0.0.0", debug=True, port="5000")
+```
+
+```dockerfile
+FROM python:3
+
+RUN apt-get update -y && \
+    apt-get install -y python3-pip python3-dev
+
+WORKDIR /app
+
+RUN pip install Flask requests flask_mysqldb
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["python", "./app.py"]
+```
+
+```
+$ docker run -d -p 5000:5000 --name flaskexternocontainer --rm flaskhost   
+d3d5e585294c1d1eb80602d6e45c5cb4c5f6bbb0d72fedc91328c8bbd
+```
+
+### 89 Conexão entre containers
+
+![/imgs/networks010.png](/imgs/networks010.png)
+
+- [Secao-5-Conectando_containers_com_Networks/3_conn_containers](Secao-5-Conectando_containers_com_Networks/3_conn_containers)
+
+```
+$ cd mysql
+
+$ docker build -t mysqlnetworkapi .                                     
+[+] Building 17.5s (8/8) FINISHED                
+```
+
+```
+$ docker network create flasknetwork
+a4b2ea44890e37cd9f6cc2d695b2d81c760f31015d7d7ae0d208d2ab922c01
+
+$ docker network ls                 
+NETWORK ID     NAME           DRIVER    SCOPE
+8f74cec68b60   bridge         bridge    local
+a4b2ea44890e   flasknetwork   bridge    local
+8110e3435b0c   host           host      local
+7f0a4681e997   none           null      local
+
+```
+
+```
+$ docker run -d -p 3306:3306 --name mysql_api_container --rm --network flasknetwork -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysqlnetworkapi
+34da1dbe6ede5bd3db1d530085a9ce1911facdf655bd194828458f2cc
+```
+
+```
+$ cd flask   
+
+$ docker build -t flaskapinetwork .                                                                                                   
+[+] Building 2.2s (11/11) FINISHED     
+
+
+$ docker run -d -p 5000:5000 --name flask_api_container --rm --network flasknetwork flaskapinetwork
+53ffff50ab0ad99a2d1b4bfa491a9700470b683b4acd2628dd6b61d17c12f8
+```
+
+### 90 Conectando um container a uma rede
+
+![/imgs/networks011.png](/imgs/networks011.png)
+
+```
+$ docker run -d -p 3306:3306 --name mysql_api_container --rm --network flasknetwork -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysqlnetworkapi
+ae60f77c00e226d8ee50b9771de5faf55b088d3aaf612ba41052b96f93905d
+
+$ docker run -d -p 5000:5000 --name flask_api_container --rm flaskapinetwork
+4a6e7a2bef53aedad6b15f9c482e10a6382cb5107d13842d9076b8bddcc8c1
+
+$ docker ps                                                                 
+CONTAINER ID   IMAGE             COMMAND                  CREATED              STATUS              PORTS                               NAMES
+4a6e7a2bef53   flaskapinetwork   "python ./app.py"        About a minute ago   Up About a minute   0.0.0.0:5000->5000/tcp              flask_api_container
+ae60f77c00e2   mysqlnetworkapi   "docker-entrypoint.s…"   3 minutes ago        Up 3 minutes        0.0.0.0:3306->3306/tcp, 33060/tcp   mysql_api_container
+
+$ docker network ls
+NETWORK ID     NAME           DRIVER    SCOPE
+8f74cec68b60   bridge         bridge    local
+a4b2ea44890e   flasknetwork   bridge    local
+
+$ docker network connect flasknetwork 4a6e7a2bef53
+
+```
+
+### 91 Desconectando um container
+
+![/imgs/networks012.png](/imgs/networks012.png)
+
+```
+$ docker network ls                               
+NETWORK ID     NAME           DRIVER    SCOPE
+8f74cec68b60   bridge         bridge    local
+a4b2ea44890e   flasknetwork   bridge    local
+8110e3435b0c   host           host      local
+7f0a4681e997   none           null      local
+
+$ docker ps        
+CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                               NAMES
+4a6e7a2bef53   flaskapinetwork   "python ./app.py"        30 minutes ago   Up 30 minutes   0.0.0.0:5000->5000/tcp              flask_api_container
+ae60f77c00e2   mysqlnetworkapi   "docker-entrypoint.s…"   32 minutes ago   Up 32 minutes   0.0.0.0:3306->3306/tcp, 33060/tcp   mysql_api_container
+
+$ docker network disconnect flasknetwork 4a6e7a2bef53
+
+```
+
+### 92 Inspecionando redes
+
+![/imgs/networks013.png](/imgs/networks013.png)
+
+```
+$ docker network inspect flasknetwork
+[
+    {
+        "Name": "flasknetwork",
+        "Id": "a4b2ea44890e37cd9f6cc2d5b2d81a0c760f31015d7d7ae0d208d2ab922c01",
+        "Created": "2023-12-26T19:28:23.422050992Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "ae60f77c00e226d8ee50b9771de5faf55b088d3aaf612ba452b96f93905da3": {
+                "Name": "mysql_api_container",
+                "EndpointID": "f35450c7007752560c4791bf2298a7c84235f077df258dc960156d42d7dbf2",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
+
+```
+
+### 93 Conclusão da seção
 
 [Voltar ao Índice](#indice)
 
