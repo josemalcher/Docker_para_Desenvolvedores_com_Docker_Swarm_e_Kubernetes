@@ -1386,7 +1386,71 @@ $ docker network inspect flasknetwork
 
 ## <a name="parte6">6 - Seção 6: Introdução ao YAML</a>
 
+### 94 Introdução da seção
+### 95 O que é YAML?
 
+![/imgs/yaml_01.png](/imgs/yaml_01.png)
+
+### 96 Criando nosso arquivo YAML
+
+![/imgs/yaml_02.png](/imgs/yaml_02.png)
+
+### 97 Espaçamento e identação
+
+![/imgs/yaml_03.png](/imgs/yaml_03.png)
+
+### 98 Comentários no YAML
+### 99 Dados numéricos
+### 100 Strings no YAML
+### 101 Valores nulos
+### 102 Booleanos
+### 103 Listas
+### 104 Dicionários
+### 105 Conclusão da seção
+
+- [/Secao-6-Introducao_ao_YAML/teste.yaml](/Secao-6-Introducao_ao_YAML/teste.yaml)
+
+```yaml
+# Instruções para o programa
+nome: "Matheus"
+idade: 30 # Esta é a idade do usuário
+
+# Este objeto descreve o nosso projeto
+objeto1:
+  versao: 2
+  arquivo: "teste.txt"
+
+versao: 2
+versao_completa: 3.14
+
+string_sem_aspas: Digite um texto aqui
+texto: "Este tambem e um texto valido para o YAML"
+
+nulo: ~
+nulo_dois: null
+
+verdadeiro: True
+verdadeiro_dois: On
+
+falso: False
+falso_dois: Off
+
+lista: [1, 2, 3, 4, 5]
+
+lista_dois:
+  - "teste"
+  - 10
+  - outro teste
+  - True
+
+obj: {a: 1, b: 2, c: 3, objeto_interno: {a: 1}}
+
+objeto:
+  a: 1
+  b: 2
+  objeto_interno:
+    x: 2
+```
 
 [Voltar ao Índice](#indice)
 
