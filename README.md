@@ -1459,7 +1459,145 @@ objeto:
 
 ## <a name="parte7">7 - Seção 7: Gerenciando múltiplos containers com Docker Compose</a>
 
+### 106 Introdução da seção
+### 107 O que é o Docker Compose?
 
+![/imgs/composer_1.png](/imgs/composer_1.png)
+
+### 108 Instalando o Compose no Linux
+
+![/imgs/composer_108.jpeg](/imgs/composer_108.jpeg)
+
+```
+$ docker-composer --version
+zsh: command not found: docker-composer
+
+$ docker compose version
+Docker Compose version v2.23.3-desktop.2
+
+$ docker --version
+Docker version 24.0.7, build afdd53b
+
+$  docker version
+Client: Docker Engine - Community
+ Cloud integration: v1.0.35+desktop.5
+ Version:           24.0.7
+ API version:       1.43
+ Go version:        go1.20.10
+ Git commit:        afdd53b
+ Built:             Thu Oct 26 09:08:17 2023
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Desktop
+ Engine:
+  Version:          24.0.7
+  API version:      1.43 (minimum version 1.12)
+  Go version:       go1.20.10
+  Git commit:       311b9ff
+  Built:            Thu Oct 26 09:08:02 2023
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.6.25
+  GitCommit:        f198ac764191ef7b3b06d8a2eeb5c
+ runc:
+  Version:          1.1.10
+  GitCommit:        v1.1.10-0-g18a0cb0
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+
+```
+
+### 109 Criando nosso arquivo de Compose
+
+![/imgs/composer_109.png](/imgs/composer_109.png)
+
+```yaml
+version: '3.3'
+
+services:
+  db: # Container de MySQL
+    image: mysql:5.7 # FROM mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: matheus
+      MYSQL_PASSWORD: secret
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:latest
+    ports:
+      - "8000:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: matheus
+      WORDPRESS_DB_PASSWORD: secret
+      WORDPRESS_DB_NAME: wordpress
+volumes:
+  db_data: {}
+```
+
+### 110 Rodando o Compose
+
+![/imgs/composer_110.png](/imgs/composer_110.png)
+
+```
+$ docker-compose up
+[+] Running 34/2
+ ✔ wordpress 21 layers [⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]      0B/0B      Pulled                                                                                                                                                                 20.2s 
+ ✔ db 11 layers [⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿]      0B/0B      Pulled                                                                                                                                                                                  25.8s 
+[+] Running 4/4
+ ✔ Network 1_create_composer_default        Created                                                                                                                                                                                    0.1s 
+ ✔ Volume "1_create_composer_db_data"       Created                                                                                                                                                                                    0.0s 
+ ✔ Container 1_create_composer-db-1         Created                                                                                                                                                                                    0.1s 
+ ✔ Container 1_create_composer-wordpress-1  Created                                                                                                                                                                                    0.1s 
+Attaching to db-1, wordpress-1
+
+```
+
+### 111 Rodando o Compose em background
+
+![/imgs/composer_111.png](/imgs/composer_111.png)
+
+```
+$ docker-compose up -d
+[+] Running 3/3
+ ✔ Network 1_create_composer_default        Created                                                                                                                                                                                    0.0s 
+ ✔ Container 1_create_composer-db-1         Started                                                                                                                                                                                    0.1s 
+ ✔ Container 1_create_composer-wordpress-1  Started                                                                                                                                                                                    0.1s 
+
+```
+
+### 112 Parando o Compose
+
+![/imgs/composer_112.png](/imgs/composer_112.png)
+
+```
+$ docker-compose down 
+[+] Running 3/3
+ ✔ Container 1_create_composer-wordpress-1  Removed                                                                                                                                                                                    1.3s 
+ ✔ Container 1_create_composer-db-1         Removed                                                                                                                                                                                    1.4s 
+ ✔ Network 1_create_composer_default        Removed   
+```
+
+### 113 Variáveis de ambiente no Compose
+
+![/imgs/composer_113.png](/imgs/composer_113.png)
+
+### 114 Redes no Compose
+### 115 Criando o Compose do nosso projeto
+### 116 Build de imagens no Compose
+### 117 Volume bind mount no Compose
+### 118 Verificando serviços do Compose
+### 119 Conclusão da seçã
 
 [Voltar ao Índice](#indice)
 
