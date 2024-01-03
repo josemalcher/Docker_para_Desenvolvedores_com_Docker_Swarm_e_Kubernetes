@@ -1592,12 +1592,174 @@ $ docker-compose down
 
 ![/imgs/composer_113.png](/imgs/composer_113.png)
 
+```
+version: '3.3'
+
+services:
+  db: # Container de MySQL
+    image: mysql:5.7 # FROM mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    env_file:
+      - ./config/db.env
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:latest
+    ports:
+      - "8000:80"
+    restart: always
+    env_file:
+      - ./config/wp.env
+
+volumes:
+  db_data: {}
+
+```
+
 ### 114 Redes no Compose
+
+![/imgs/composer_114.png](/imgs/composer_114.png)
+
+```
+version: '3.3'
+
+services:
+  db: # Container de MySQL
+    image: mysql:5.7 # FROM mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    env_file:
+      - ./config/db.env
+    networks:
+      - backend
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:latest
+    ports:
+      - "8000:80"
+    restart: always
+    env_file:
+      - ./config/wp.env
+    networks:
+      - backend
+
+volumes:
+  db_data: {}
+networks:
+  backend:
+    driver: bridge
+```
+
 ### 115 Criando o Compose do nosso projeto
+
+```
+version: '3.3'
+
+services:
+  db:
+    image: mysqlcompose
+    restart: always
+    env_file:
+      - ./config/db.env
+    ports:
+      - "3306:3306"
+    networks:
+      - dockercompose
+    volumes:
+      - ./mysql/schema.sql:/docker-entrypoint-initdb.d/init.sql
+
+  flask:
+    depends_on:
+      - db
+    image: flaskcompose
+    ports:
+      - "5000:5000"
+    restart: always
+    networks:
+      - dockercompose
+
+networks:
+  dockercompose:
+```
+
 ### 116 Build de imagens no Compose
+
+```
+version: '3.3'
+
+services:
+  db:
+    build: ./mysql/
+    restart: always
+    env_file:
+      - ./config/db.env
+    ports:
+      - "3306:3306"
+    networks:
+      - dockercompose
+    volumes:
+      - ./mysql/schema.sql:/docker-entrypoint-initdb.d/init.sql
+
+  flask:
+    depends_on:
+      - db
+    build: ./flask/
+    ports:
+      - "5000:5000"
+    restart: always
+    networks:
+      - dockercompose
+
+networks:
+  dockercompose:
+```
+
+```
+$ docker-compose up -d
+[+] Running 3/3
+ ✔ Network 4_projeto_dockercompose  Created                                                                                                                                                                            0.0s 
+ ✔ Container 4_projeto-db-1         Started                                                                                                                                                                            0.1s 
+ ✔ Container 4_projeto-flask-1      Started   
+```
+
 ### 117 Volume bind mount no Compose
+
+![/imgs/composer_117.png](/imgs/composer_117.png)
+
+```
+  flask:
+    depends_on:
+      - db
+    build: ./flask/
+    ports:
+      - "5000:5000"
+    restart: always
+    volumes:
+      - /flask/:/app"
+    networks:
+      - dockercompose
+
+networks:
+  dockercompose:
+```
+
 ### 118 Verificando serviços do Compose
-### 119 Conclusão da seçã
+
+![/imgs/composer_118.png](/imgs/composer_118.png)
+
+```
+$ docker-compose ps 
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+
+```
+
+### 119 Conclusão da seção
 
 [Voltar ao Índice](#indice)
 
