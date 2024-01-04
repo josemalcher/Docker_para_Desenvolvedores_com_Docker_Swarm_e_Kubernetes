@@ -1768,7 +1768,47 @@ NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
 
 ## <a name="parte8">8 - Seção 8: Docker Swarm para orquestração</a>
 
+### 120 Introdução da seção
+### 121 O que é orquestração de containers?
 
+![/imgs/swarm_120.png](/imgs/swarm_120.png)
+
+### 122 O que é Docker Swarm?
+
+![/imgs/swarm_122.png](/imgs/swarm_122.png)
+
+### 123 Conceitos fundamentais do Swarm
+
+![/imgs/swarm_123.png](/imgs/swarm_123.png)
+
+### 124 Maneiras de executar o Swarm
+
+![/imgs/swarm_124.png](/imgs/swarm_124.png)
+
+### 125 Setup do Swarm na AWS
+### 126 Instalando Docker na AWS e rodando o Swarm
+### 127 Setup do Swarm no Docker Labs
+### 128 Inicializando o Swarm
+### 129 Listando todos os Nodes
+### 130 Adicionando máquinas ao Swarm
+### 131 Subindo serviço no Swarm
+### 132 Verificar serviços rodando no Swarm
+### 133 Removendo serviços
+### 134 Replicando serviços
+### 135 Testando a orquestração do Swarm
+### 136 Recuperando o token do Manager
+### 137 Mais informações sobre o Swarm
+### 138 Deixar o Swarm em um Node
+### 139 Removendo um Node
+### 140 Inspecionando serviços
+### 141 Verificar quais containers estão rodando
+### 142 Compose no Swarm
+### 143 Escalando nossa aplicação
+### 144 Parar de receber Tasks em um Node
+### 145 Atualizando uma imagem no Swarm
+### 146 Criando redes para serviços do Swarm
+### 147 Conectando serviço a uma rede já existente
+### 148 Conclusão da seção
 
 [Voltar ao Índice](#indice)
 
