@@ -1788,9 +1788,40 @@ NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
 ### 125 Setup do Swarm na AWS
 ### 126 Instalando Docker na AWS e rodando o Swarm
 ### 127 Setup do Swarm no Docker Labs
+
+```
+[node1] (local) root@192.168.0.13 ~
+$ docker swarm init --advertise-addr 192.168.0.13
+Swarm initialized: current node (uwjloa54th2ybydfqjjkmklt4) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-1etwqwavbq9yjzwa5xxw3r3mk6aarha8crabuuerf8x4f89vav-0vg39tbe4ge5ezany4ay73fnu 192.168.0.13:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+```
+
 ### 128 Inicializando o Swarm
+
+
+![/imgs/swarm_128.png](/imgs/swarm_128.png)
+
 ### 129 Listando todos os Nodes
+
+![/imgs/swarm_129.png](/imgs/swarm_129.png)
+
+```
+[node1] (local) root@192.168.0.13 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+uwjloa54th2ybydfqjjkmklt4 *   node1      Ready     Active         Leader           24.0.7
+```
+
 ### 130 Adicionando máquinas ao Swarm
+
+![/imgs/swarm_130.png](/imgs/swarm_130.png)
+
 ### 131 Subindo serviço no Swarm
 ### 132 Verificar serviços rodando no Swarm
 ### 133 Removendo serviços
