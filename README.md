@@ -1969,17 +1969,827 @@ CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS   
 ```
 
 ### 136 Recuperando o token do Manager
+
+![/imgs/swarm_136.png](/imgs/swarm_136.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker swarm join-token manager
+To add a manager to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-2drkgtxwk5abtdygnix0l8tk27z86lf65ciiutztowofvhe71j-6vqsbzd6nc1p8zqb9vcf2wmrz 192.168.0.18:2377
+
+```
+
 ### 137 Mais informações sobre o Swarm
+
+![/imgs/swarm_137.png](/imgs/swarm_137.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker info
+Client:
+ Version:    24.0.7
+ Context:    default
+ Debug Mode: false
+ Plugins:
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.11.2
+    Path:     /usr/local/libexec/docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.23.0
+    Path:     /usr/local/libexec/docker/cli-plugins/docker-compose
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.0.9
+    Path:     /usr/lib/docker/cli-plugins/docker-scout
+
+Server:
+ Containers: 1
+  Running: 1
+  Paused: 0
+  Stopped: 0
+ Images: 1
+ Server Version: 24.0.7
+ Storage Driver: overlay2
+  Backing Filesystem: xfs
+  Supports d_type: true
+  Using metacopy: false
+  Native Overlay Diff: true
+  userxattr: false
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 1
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local logentries splunk syslog
+ Swarm: active
+  NodeID: 2r9nkedwnoqxv0smrvuuj2uoh
+  Is Manager: true
+  ClusterID: rt6qxlp5al5ftjkfbc8ix79qo
+  Managers: 1
+  Nodes: 3
+  Default Address Pool: 10.0.0.0/8  
+  SubnetSize: 24
+  Data Path Port: 4789
+  Orchestration:
+   Task History Retention Limit: 5
+  Raft:
+   Snapshot Interval: 10000
+   Number of Old Snapshots to Retain: 0
+   Heartbeat Tick: 1
+   Election Tick: 10
+  Dispatcher:
+   Heartbeat Period: 5 seconds
+  CA Configuration:
+   Expiry Duration: 3 months
+   Force Rotate: 0
+  Autolock Managers: false
+  Root Rotation In Progress: false
+  Node Address: 192.168.0.18
+  Manager Addresses:
+   192.168.0.18:2377
+ Runtimes: io.containerd.runc.v2 runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 091922f03c2762540fd057fba91260237ff86acb
+ runc version: v1.1.9-0-gccaecfc
+ init version: de40ad0
+ Security Options:
+  apparmor
+  seccomp
+   Profile: builtin
+ Kernel Version: 4.4.0-210-generic
+ Operating System: Alpine Linux v3.18 (containerized)
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 8
+ Total Memory: 31.42GiB
+ Name: node1
+ ID: ab60dc39-f44f-4d60-9ed5-275aa4c0c862
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: true
+  File Descriptors: 51
+  Goroutines: 191
+  System Time: 2024-01-11T00:34:16.000875645Z
+  EventsListeners: 1
+ Experimental: true
+ Insecure Registries:
+  127.0.0.1
+  127.0.0.0/8
+ Live Restore Enabled: false
+ Product License: Community Engine
+
+WARNING: API is accessible on http://0.0.0.0:2375 without encryption.
+         Access to the remote API is equivalent to root access on the host. Refer
+         to the 'Docker daemon attack surface' section in the documentation for
+         more information: https://docs.docker.com/go/attack-surface/
+WARNING: No swap limit support
+WARNING: bridge-nf-call-iptables is disabled
+WARNING: bridge-nf-call-ip6tables is disabled
+```
+
 ### 138 Deixar o Swarm em um Node
+
+![/imgs/swarm_138.png](/imgs/swarm_138.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+2r9nkedwnoqxv0smrvuuj2uoh *   node1      Ready     Active         Leader           24.0.7
+3xc5z9xaharluhc2hjt4ue13n     node2      Ready     Active                          24.0.7
+vufqbwhqcsplsi5zvcnj6q2pt     node3      Ready     Active                          24.0.7
+```
+
+```
+[node3] (local) root@192.168.0.16 ~
+$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS     NAMES
+4a74eb270414   nginx:latest   "/docker-entrypoint.…"   41 minutes ago   Up 41 minutes   80/tcp    nginxreplicas.3.ef79fss1tzdpa8rhddb06bzsq
+
+[node3] (local) root@192.168.0.16 ~
+$ docker swarm leave
+Node left the swarm.
+
+[node3] (local) root@192.168.0.16 ~
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+```
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+2r9nkedwnoqxv0smrvuuj2uoh *   node1      Ready     Active         Leader           24.0.7
+3xc5z9xaharluhc2hjt4ue13n     node2      Ready     Active                          24.0.7
+vufqbwhqcsplsi5zvcnj6q2pt     node3      Down      Active                          24.0.7
+```
+
 ### 139 Removendo um Node
+
+![/imgs/swarm_139.png](/imgs/swarm_139.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+2r9nkedwnoqxv0smrvuuj2uoh *   node1      Ready     Active         Leader           24.0.7
+3xc5z9xaharluhc2hjt4ue13n     node2      Ready     Active                          24.0.7
+vufqbwhqcsplsi5zvcnj6q2pt     node3      Down      Active                          24.0.7
+
+[node1] (local) root@192.168.0.18 ~
+$ docker node rm vufqbwhqcsplsi5zvcnj6q2pt
+vufqbwhqcsplsi5zvcnj6q2pt
+
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+2r9nkedwnoqxv0smrvuuj2uoh *   node1      Ready     Active         Leader           24.0.7
+3xc5z9xaharluhc2hjt4ue13n     node2      Ready     Active                          24.0.7
+```
+
+- Resolvendo Bug!
+
+```
+[node3] (local) root@192.168.0.16 ~
+$ docker swarm join --token SWMTKN-1-2drkgtxwk5abtdygnix0l8tk27z86lf65ciiutztowofvhe71j-6vqsbzd6nc1p8zqb9vcf2wmrz 192.168.0.18:2377
+This node joined a swarm as a manager.
+
+[node3] (local) root@192.168.0.16 ~
+$ docker psCONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+[node3] (local) root@192.168.0.16 ~
+$ docker swarm leave -f
+Node left the swarm.
+
+[node2] (local) root@192.168.0.17 ~
+$ docker swarm leave -f
+Node left the swarm.
+
+[node1] (local) root@192.168.0.18 ~
+$ docker swarm leave -f
+Node left the swarm.
+
+[node1] (local) root@192.168.0.18 ~
+$ docker swarm init --advertise-addr 192.168.0.18
+Swarm initialized: current node (vvgg2b9jn31ku0mx32j83a7p5) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-2cgt2w0r2ew6bm25a9euadr6o0tg6jp3lbfyw9x97r7mmy5uck-daaljw12deqex39zsav29ea98 192.168.0.18:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+vvgg2b9jn31ku0mx32j83a7p5 *   node1      Ready     Active         Leader           24.0.7
+xb7woxbgavkpbkm27s71grgxb     node2      Ready     Active                          24.0.7
+y60ybsk7zb98vna8b0owaezgt     node3      Ready     Active                          24.0.7
+
+
+```
+
 ### 140 Inspecionando serviços
+
+![/imgs/swarm_140.png](/imgs/swarm_140.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME            MODE         REPLICAS   IMAGE          PORTS
+q5ltce54gvpi   nginxreplicas   replicated   3/3        nginx:latest   *:80->80/tcp
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service inspect q5ltce54gvpi
+[
+    {
+        "ID": "q5ltce54gvpiov5qhjcbfltt6",
+        "Version": {
+            "Index": 23
+        },
+        "CreatedAt": "2024-01-11T00:53:51.344972883Z",
+        "UpdatedAt": "2024-01-11T00:53:51.348366574Z",
+        "Spec": {
+            "Name": "nginxreplicas",
+            "Labels": {},
+            "TaskTemplate": {
+                "ContainerSpec": {
+                    "Image": "nginx:latest@sha256:2bdc49f2f8ae8d8dc50ed00f2ee56d00385c6f8bc8a8b320d0a294d9e3b49026",
+                    "Init": false,
+                    "StopGracePeriod": 10000000000,
+                    "DNSConfig": {},
+                    "Isolation": "default"
+                },
+                "Resources": {
+                    "Limits": {},
+                    "Reservations": {}
+                },
+                "RestartPolicy": {
+                    "Condition": "any",
+                    "Delay": 5000000000,
+                    "MaxAttempts": 0
+                },
+                "Placement": {
+                    "Platforms": [
+                        {
+                            "Architecture": "amd64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "arm64",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "386",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "mips64le",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "ppc64le",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        },
+                        {
+                            "Architecture": "s390x",
+                            "OS": "linux"
+                        },
+                        {
+                            "Architecture": "unknown",
+                            "OS": "unknown"
+                        }
+                    ]
+                },
+                "ForceUpdate": 0,
+                "Runtime": "container"
+            },
+            "Mode": {
+                "Replicated": {
+                    "Replicas": 3
+                }
+            },
+            "UpdateConfig": {
+                "Parallelism": 1,
+                "FailureAction": "pause",
+                "Monitor": 5000000000,
+                "MaxFailureRatio": 0,
+                "Order": "stop-first"
+            },
+            "RollbackConfig": {
+                "Parallelism": 1,
+                "FailureAction": "pause",
+                "Monitor": 5000000000,
+                "MaxFailureRatio": 0,
+                "Order": "stop-first"
+            },
+            "EndpointSpec": {
+                "Mode": "vip",
+                "Ports": [
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 80,
+                        "PublishedPort": 80,
+                        "PublishMode": "ingress"
+                    }
+                ]
+            }
+        },
+        "Endpoint": {
+            "Spec": {
+                "Mode": "vip",
+                "Ports": [
+                    {
+                        "Protocol": "tcp",
+                        "TargetPort": 80,
+                        "PublishedPort": 80,
+                        "PublishMode": "ingress"
+                    }
+                ]
+            },
+            "Ports": [
+                {
+                    "Protocol": "tcp",
+                    "TargetPort": 80,
+                    "PublishedPort": 80,
+                    "PublishMode": "ingress"
+                }
+            ],
+            "VirtualIPs": [
+                {
+                    "NetworkID": "a6lc08ii7lesjjqqhbp682tel",
+                    "Addr": "10.0.0.5/24"
+                }
+            ]
+        }
+    }
+]
+```
+
 ### 141 Verificar quais containers estão rodando
+
+![/imgs/swarm_141.png](/imgs/swarm_141.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME            MODE         REPLICAS   IMAGE          PORTS
+q5ltce54gvpi   nginxreplicas   replicated   3/3        nginx:latest   *:80->80/tcp
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ps q5ltce54gvpi
+ID             NAME              IMAGE          NODE      DESIRED STATE   CURRENT STATE           ERROR     PORTS
+or0sizsiehkw   nginxreplicas.1   nginx:latest   node2     Running         Running 4 minutes ago             
+o3q0q01l6zlb   nginxreplicas.2   nginx:latest   node3     Running         Running 4 minutes ago             
+g6nraaawzrfl   nginxreplicas.3   nginx:latest   node1     Running         Running 4 minutes ago
+```
+
 ### 142 Compose no Swarm
+
+![/imgs/swarm_142.png](/imgs/swarm_142.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker swarm init --advertise-addr 192.168.0.18
+Swarm initialized: current node (iqzbp63o13hk20nckri0ir8lh) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-1dueip5y217m11n4vbg3efewd1hmb7fxte6meybd61jbp7e4xd-1al75y4owjqkg08xaeguzhtmx 192.168.0.18:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+[node1] (local) root@192.168.0.18 ~
+$ ls
+docker-composer.yml
+
+[node1] (local) root@192.168.0.18 ~
+$ sudo docker stack deploy -c docker-composer.yml nginx-swarm
+Creating network nginx-swarm_default
+Creating service nginx-swarm_web
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME              MODE         REPLICAS   IMAGE          PORTS
+io2sogduz4wh   nginx-swarm_web   replicated   1/1        nginx:latest   *:80->80/tcp
+```
+
 ### 143 Escalando nossa aplicação
+
+![/imgs/swarm_143.png](/imgs/swarm_143.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+iqzbp63o13hk20nckri0ir8lh *   node1      Ready     Active         Leader           24.0.7
+pbi825xo6v6a9q15w57ir2kcy     node2      Ready     Active                          24.0.7
+twhybc3vzn1cpnpsxad0fd0x4     node3      Ready     Active                          24.0.7
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME              MODE         REPLICAS   IMAGE          PORTS
+io2sogduz4wh   nginx-swarm_web   replicated   1/1        nginx:latest   *:80->80/tcp
+
+[node1] (local) root@192.168.0.18 ~
+$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS     NAMES
+e62c9a3a8259   nginx:latest   "/docker-entrypoint.…"   2 minutes ago   Up 2 minutes   80/tcp    nginx-swarm_web.1.1f6abkhldrif3jagbzy45zvw2
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service scale nginx-swarm_web=3
+nginx-swarm_web scaled to 3
+overall progress: 3 out of 3 tasks 
+1/3: running   [==================================================>] 
+2/3: running   [==================================================>] 
+3/3: running   [==================================================>] 
+verify: Service converged 
+
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+iqzbp63o13hk20nckri0ir8lh *   node1      Ready     Active         Leader           24.0.7
+pbi825xo6v6a9q15w57ir2kcy     node2      Ready     Active                          24.0.7
+twhybc3vzn1cpnpsxad0fd0x4     node3      Ready     Active                          24.0.7
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME              MODE         REPLICAS   IMAGE          PORTS
+io2sogduz4wh   nginx-swarm_web   replicated   3/3        nginx:latest   *:80->80/tcp
+```
+
 ### 144 Parar de receber Tasks em um Node
+
+![/imgs/swarm_144.png](/imgs/swarm_144.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+iqzbp63o13hk20nckri0ir8lh *   node1      Ready     Active         Leader           24.0.7
+pbi825xo6v6a9q15w57ir2kcy     node2      Ready     Active                          24.0.7
+twhybc3vzn1cpnpsxad0fd0x4     node3      Ready     Active                          24.0.7
+
+[node1] (local) root@192.168.0.18 ~
+$ docker node update --availability drain twhybc3vzn1cpnpsxad0fd0x4
+twhybc3vzn1cpnpsxad0fd0x4
+
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+iqzbp63o13hk20nckri0ir8lh *   node1      Ready     Active         Leader           24.0.7
+pbi825xo6v6a9q15w57ir2kcy     node2      Ready     Active                          24.0.7
+twhybc3vzn1cpnpsxad0fd0x4     node3      Ready     Drain                           24.0.7
+
+```
+
 ### 145 Atualizando uma imagem no Swarm
+
+![/imgs/swarm_145.png](/imgs/swarm_145.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+iqzbp63o13hk20nckri0ir8lh *   node1      Ready     Active         Leader           24.0.7
+pbi825xo6v6a9q15w57ir2kcy     node2      Ready     Active                          24.0.7
+twhybc3vzn1cpnpsxad0fd0x4     node3      Ready     Drain                           24.0.7
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME              MODE         REPLICAS   IMAGE          PORTS
+io2sogduz4wh   nginx-swarm_web   replicated   3/3        nginx:latest   *:80->80/tcp
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service update --image nginx:1.18.0 io2sogduz4wh
+io2sogduz4wh
+overall progress: 3 out of 3 tasks 
+1/3: running   [==================================================>] 
+2/3: running   [==================================================>] 
+3/3: running   [==================================================>] 
+verify: Service converged 
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker node ps
+ID             NAME                    IMAGE          NODE      DESIRED STATE   CURRENT STATE             ERROR     PORTS
+zj8l60plx624   nginx-swarm_web.1       nginx:1.18.0   node1     Running         Running 52 seconds ago              
+1f6abkhldrif    \_ nginx-swarm_web.1   nginx:latest   node1     Shutdown        Shutdown 55 seconds ago             
+znx7c0zumhyq   nginx-swarm_web.3       nginx:1.18.0   node1     Running         Running 47 seconds ago   
+```
+
+```
+[node2] (local) root@192.168.0.17 ~
+$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED              STATUS              PORTS     NAMES
+1483e9bbc079   nginx:latest   "/docker-entrypoint.…"   About a minute ago   Up About a minute   80/tcp    nginx-swarm_web.2.yxikapx90t9az40qf6i1rhftx
+5f8a399e1d6d   nginx:latest   "/docker-entrypoint.…"   5 minutes ago        Up 5 minutes        80/tcp    nginx-swarm_web.3.jzvp1sdb6fsypxf8oes8ctn4b
+
+[node2] (local) root@192.168.0.17 ~
+$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS     NAMES
+ee1c32245238   nginx:1.18.0   "/docker-entrypoint.…"   3 minutes ago   Up 3 minutes   80/tcp    nginx-swarm_web.2.nezojirqvh0t31evzvu5ktjob
+```
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+iqzbp63o13hk20nckri0ir8lh *   node1      Ready     Active         Leader           24.0.7
+pbi825xo6v6a9q15w57ir2kcy     node2      Ready     Active                          24.0.7
+twhybc3vzn1cpnpsxad0fd0x4     node3      Ready     Drain                           24.0.7
+
+[node1] (local) root@192.168.0.18 ~
+$ docker node update --availability active twhybc3vzn1cpnpsxad0fd0x4
+twhybc3vzn1cpnpsxad0fd0x4
+
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+iqzbp63o13hk20nckri0ir8lh *   node1      Ready     Active         Leader           24.0.7
+pbi825xo6v6a9q15w57ir2kcy     node2      Ready     Active                          24.0.7
+twhybc3vzn1cpnpsxad0fd0x4     node3      Ready     Active                          24.0.7
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME              MODE         REPLICAS   IMAGE          PORTS
+io2sogduz4wh   nginx-swarm_web   replicated   3/3        nginx:1.18.0   *:80->80/tcp
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service update --image nginx:latest io2sogduz4wh
+io2sogduz4wh
+overall progress: 3 out of 3 tasks 
+1/3: running   [==================================================>] 
+2/3: running   [==================================================>] 
+3/3: running   [==================================================>] 
+verify: Service converged 
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS     NAMES
+ab15f4ad35d2   nginx:latest   "/docker-entrypoint.…"   17 seconds ago   Up 10 seconds   80/tcp    nginx-swarm_web.1.l6at3agwikwgxs125ilo39axw
+```
+
 ### 146 Criando redes para serviços do Swarm
+
+![/imgs/swarm_146.png](/imgs/swarm_146.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME              MODE         REPLICAS   IMAGE          PORTS
+io2sogduz4wh   nginx-swarm_web   replicated   3/3        nginx:latest   *:80->80/tcp
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service rm io2sogduz4wh
+io2sogduz4wh
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID        NAME      MODE      REPLICAS   IMAGE     PORTS
+```
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker network create --driver overlay swarm
+qoidqpijxggurgt68uu93u9gf
+
+[node1] (local) root@192.168.0.18 ~
+$ docker network ls
+NETWORK ID     NAME                  DRIVER    SCOPE
+387dc5c5594e   bridge                bridge    local
+87cb11cc52a7   docker_gwbridge       bridge    local
+257f5d9ab7e9   host                  host      local
+zflzq2wgghb6   ingress               overlay   swarm
+pjtjf2lfk694   nginx-swarm_default   overlay   swarm
+cba92a8d6d5f   none                  null      local
+qoidqpijxggu   swarm                 overlay   swarm
+```
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker service create --name nginxreplicas --replicas 3 -p 80:80 --network swarm nginx
+u9r7xkojjfj3mgcv2x50rm3g5
+overall progress: 3 out of 3 tasks 
+1/3: running   [==================================================>] 
+2/3: running   [==================================================>] 
+3/3: running   [==================================================>] 
+verify: Service converged 
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME            MODE         REPLICAS   IMAGE          PORTS
+u9r7xkojjfj3   nginxreplicas   replicated   3/3        nginx:latest   *:80->80/tcp
+```
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker container ls
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS     NAMES
+eaf45585b681   nginx:latest   "/docker-entrypoint.…"   54 seconds ago   Up 51 seconds   80/tcp    nginxreplicas.3.8sbi70jy5nw0ih6au5joy8soe
+[node1] (local) root@192.168.0.18 ~
+$ docker container inspect eaf45585b681
+[
+      },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "5470a8806fb12e2f24cc5431203d4e9a5c71b77c11dc6b078b678c8a119da220",
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "Ports": {
+                "80/tcp": null
+            },
+            "SandboxKey": "/var/run/docker/netns/5470a8806fb1",
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "",
+            "Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "",
+            "IPPrefixLen": 0,
+            "IPv6Gateway": "",
+            "MacAddress": "",
+            "Networks": {
+                "ingress": {
+                    "IPAMConfig": {
+                        "IPv4Address": "10.0.0.19"
+                    },
+                    "Links": null,
+                    "Aliases": [
+                        "eaf45585b681"
+                    ],
+                    "NetworkID": "zflzq2wgghb6cpadart4mx6jr",
+                    "EndpointID": "1d51914f06eed8fcd459dcfe5d64c9aab716b5bce879209ed4910e62a2bca849",
+                    "Gateway": "",
+                    "IPAddress": "10.0.0.19",
+                    "IPPrefixLen": 24,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "MacAddress": "02:42:0a:00:00:13",
+                    "DriverOpts": null
+                },
+                "swarm": {
+                    "IPAMConfig": {
+                        "IPv4Address": "10.0.2.5"
+                    },
+                    "Links": null,
+                    "Aliases": [
+                        "eaf45585b681"
+                    ],
+                    "NetworkID": "qoidqpijxggurgt68uu93u9gf",
+                    "EndpointID": "12c7f5b9ec1f1361f0c22d55d7f488ad69bd265b30a01687b13f7920a107bea8",
+                    "Gateway": "",
+                    "IPAddress": "10.0.2.5",
+                    "IPPrefixLen": 24,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "MacAddress": "02:42:0a:00:02:05",
+                    "DriverOpts": null
+                }
+            }
+```
+
 ### 147 Conectando serviço a uma rede já existente
+
+![/imgs/swarm_147.png](/imgs/swarm_147.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME            MODE         REPLICAS   IMAGE          PORTS
+u9r7xkojjfj3   nginxreplicas   replicated   3/3        nginx:latest   *:80->80/tcp
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service rm u9r7xkojjfj3
+u9r7xkojjfj3
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID        NAME      MODE      REPLICAS   IMAGE     PORTS
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker network ls
+NETWORK ID     NAME                  DRIVER    SCOPE
+387dc5c5594e   bridge                bridge    local
+87cb11cc52a7   docker_gwbridge       bridge    local
+257f5d9ab7e9   host                  host      local
+zflzq2wgghb6   ingress               overlay   swarm
+pjtjf2lfk694   nginx-swarm_default   overlay   swarm
+cba92a8d6d5f   none                  null      local
+qoidqpijxggu   swarm                 overlay   swarm
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service create --name nginxreplicas --replicas 3 -p 80:80 nginx
+jrgl28fpg69o7po401vlxwc3m
+overall progress: 3 out of 3 tasks 
+1/3: running   [==================================================>] 
+2/3: running   [==================================================>] 
+3/3: running   [==================================================>] 
+verify: Service converged 
+```
+
+```
+$ docker container ls
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS     NAMES
+5d63e563dce4   nginx:latest   "/docker-entrypoint.…"   42 seconds ago   Up 40 seconds   80/tcp    nginxreplicas.2.4qizvhqv9m59lb9rgagu02iz1
+
+[node1] (local) root@192.168.0.18 ~
+$ docker container inspect 5d63
+[
+ "Networks": {
+                "ingress": {
+                    "IPAMConfig": {
+                        "IPv4Address": "10.0.0.22"
+                    },
+                    "Links": null,
+                    "Aliases": [
+                        "5d63e563dce4"
+                    ],
+                    "NetworkID": "zflzq2wgghb6cpadart4mx6jr",
+                    "EndpointID": "c975222038764a49da4b2baf787fb170d4603a380bdcec9c29dad2f23836ab70",
+                    "Gateway": "",
+                    "IPAddress": "10.0.0.22",
+                    "IPPrefixLen": 24,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "MacAddress": "02:42:0a:00:00:16",
+                    "DriverOpts": null
+                }
+            }
+```
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME            MODE         REPLICAS   IMAGE          PORTS
+jrgl28fpg69o   nginxreplicas   replicated   3/3        nginx:latest   *:80->80/tcp
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service update --network-add swarm jrgl28fpg69o
+jrgl28fpg69o
+overall progress: 3 out of 3 tasks 
+1/3: running   [==================================================>] 
+2/3: running   [==================================================>] 
+3/3: running   [==================================================>] 
+verify: Service converged 
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service update --network-add swarm jrgl28fpg69o
+service is already attached to network swarm
+```
+
 ### 148 Conclusão da seção
 
 [Voltar ao Índice](#indice)
