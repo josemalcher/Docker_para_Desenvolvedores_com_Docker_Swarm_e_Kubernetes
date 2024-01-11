@@ -1791,7 +1791,7 @@ NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
 
 ```
 [node1] (local) root@192.168.0.13 ~
-$ docker swarm init --advertise-addr 192.168.0.13
+$ docker swarm init --advertise-addr 192.168.0.18
 Swarm initialized: current node (uwjloa54th2ybydfqjjkmklt4) is now a manager.
 
 To add a worker to this swarm, run the following command:
@@ -1806,6 +1806,11 @@ To add a manager to this swarm, run 'docker swarm join-token manager' and follow
 
 
 ![/imgs/swarm_128.png](/imgs/swarm_128.png)
+
+```
+$ docker swarm leave -f
+Node left the swarm.
+```
 
 ### 129 Listando todos os Nodes
 
@@ -1822,11 +1827,147 @@ uwjloa54th2ybydfqjjkmklt4 *   node1      Ready     Active         Leader        
 
 ![/imgs/swarm_130.png](/imgs/swarm_130.png)
 
+```
+Token entregue
+
+docker swarm join --token SWMTKN-1-12lwga6e5t5dg9j5av0mjhhqs7qahaeon0wbt8b61cj3pp-ab9twa9rigy8rybtl9jet399v 192.168.0.18:2377
+```
+
+```
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+2r9nkedwnoqxv0smrvuuj2uoh *   node1      Ready     Active         Leader           24.0.7
+3xc5z9xaharluhc2hjt4ue13n     node2      Ready     Active                          24.0.7
+vufqbwhqcsplsi5zvcnj6q2pt     node3      Ready     Active                          24.0.7
+```
+
 ### 131 Subindo serviço no Swarm
+
+![/imgs/swarm_131.png](/imgs/swarm_131.png)
+
+```
+$ docker service create --name nginxswarm -p 80:80 nginx
+roy1al2uqszmkjfx8u9sqzzon
+overall progress: 1 out of 1 tasks 
+1/1: running   [==================================================>] 
+verify: Service converged 
+[node1] (local) root@192.168.0.18 ~
+
+$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS     NAMES
+35f46efa5853   nginx:latest   "/docker-entrypoint.…"   22 seconds ago   Up 21 seconds   80/tcp    nginxswarm.1.zc76jkvjg2xv4f9wwvpqnmj64
+```
+
+
 ### 132 Verificar serviços rodando no Swarm
+
+![/imgs/swarm_132.png](/imgs/swarm_132.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker node ls
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+2r9nkedwnoqxv0smrvuuj2uoh *   node1      Ready     Active         Leader           24.0.7
+3xc5z9xaharluhc2hjt4ue13n     node2      Ready     Active                          24.0.7
+vufqbwhqcsplsi5zvcnj6q2pt     node3      Ready     Active                          24.0.7
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME         MODE         REPLICAS   IMAGE          PORTS
+roy1al2uqszm   nginxswarm   replicated   1/1        nginx:latest   *:80->80/tcp
+```
+
 ### 133 Removendo serviços
+
+![/imgs/swarm_133.png](/imgs/swarm_133.png)
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME         MODE         REPLICAS   IMAGE          PORTS
+roy1al2uqszm   nginxswarm   replicated   1/1        nginx:latest   *:80->80/tcp
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service rm roy1
+roy1
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID        NAME      MODE      REPLICAS   IMAGE     PORTS
+```
+
 ### 134 Replicando serviços
+
+![/imgs/swarm_134.png](/imgs/swarm_134.png)
+
+
+```
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME         MODE         REPLICAS   IMAGE          PORTS
+weac39ei5g3v   nginxswarm   replicated   1/1        nginx:latest   *:80->80/tcp
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service rm weac
+weac
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID        NAME      MODE      REPLICAS   IMAGE     PORTS
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service create --name nginxreplicas --replicas 3 -p 80:80 nginx
+o7pxop46xmb3s6hpno930hoqe
+overall progress: 3 out of 3 tasks 
+1/3: running   [==================================================>] 
+2/3: running   [==================================================>] 
+3/3: running   [==================================================>] 
+verify: Service converged 
+
+
+[node1] (local) root@192.168.0.18 ~
+$ docker service ls
+ID             NAME            MODE         REPLICAS   IMAGE          PORTS
+o7pxop46xmb3   nginxreplicas   replicated   3/3        nginx:latest   *:80->80/tcp
+```
+
+```
+[node3] (local) root@192.168.0.16 ~
+$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS     NAMES
+bbc6c43ade22   nginx:latest   "/docker-entrypoint.…"   50 seconds ago   Up 49 seconds   80/tcp    nginxreplicas.3.vth966v9s9jq10u7grdxqa8j9
+```
+
 ### 135 Testando a orquestração do Swarm
+
+![/imgs/swarm_135.png](/imgs/swarm_135.png)
+
+```
+[node3] (local) root@192.168.0.16 ~
+$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS     NAMES
+bbc6c43ade22   nginx:latest   "/docker-entrypoint.…"   3 minutes ago   Up 3 minutes   80/tcp    nginxreplicas.3.vth966v9s9jq10u7grdxqa8j9
+
+[node3] (local) root@192.168.0.16 ~
+$ docker rm bbc6
+Error response from daemon: You cannot remove a running container bbc6c43ade22346c8f8405b4e0077d69c8db3928cab315c2ab0f212e9b328f3e. Stop the container before attempting removal or force remove
+
+[node3] (local) root@192.168.0.16 ~
+$ docker rm bbc6 -f
+bbc6
+
+[node3] (local) root@192.168.0.16 ~
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+[node3] (local) root@192.168.0.16 ~
+$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS     NAMES
+4a74eb270414   nginx:latest   "/docker-entrypoint.…"   9 seconds ago   Up 2 seconds   80/tcp    nginxreplicas.3.ef79fss1tzdpa8rhddb06bzsq
+```
+
 ### 136 Recuperando o token do Manager
 ### 137 Mais informações sobre o Swarm
 ### 138 Deixar o Swarm em um Node
