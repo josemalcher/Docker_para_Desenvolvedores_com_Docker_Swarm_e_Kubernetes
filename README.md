@@ -2799,7 +2799,43 @@ service is already attached to network swarm
 
 ## <a name="parte9">9 - Seção 9: Orquestração com Kubernetes</a>
 
-
+### 149 Introdução da seção
+### 150 O que é Kubernetes?
+### 151 Conceitos fundamentais
+### 152 Dependências necessárias
+### 153 Instalação Kubernetes no Windows
+### 154 Instalação Kubernetes no Linux
+### 155 Inicializando o Minikube
+### 156 Parando o Minikube
+### 157 Acessando a Dashboard
+### 158 Deployment na teoria
+### 159 Criando nosso projeto
+### 160 Criando o Deployment
+### 161 Verificando deployments
+### 162 Checando pods
+### 163 Configurações do Kubernetes
+### 164 Services na teoria
+### 165 Criando um Service
+### 166 Gerando um IP para o Service
+### 167 Detalhes dos services
+### 168 Escalando aplicação
+### 169 Verificando número de réplicas
+### 170 Diminuir número de réplicas
+### 171 Atualizando a imagem do projeto
+### 172 Desfazer alteração de projeto
+### 173 Deletando Services
+### 174 Deletando Deployments
+### 175 Modo declarativo teoria
+### 176 Chaves mais utilizadas do modo declarativo
+### 177 Criando nosso arquivo
+### 178 Rodando o arquivo do projeto
+### 179 Parando o deployment
+### 180 Criando o arquivo de service
+### 181 Iniciando o service
+### 182 Parando o serviço
+### 183 Atualizando o projeto
+### 184 Unindo arquivos
+### 185 Conclusão da seção
 
 [Voltar ao Índice](#indice)
 
