@@ -2884,9 +2884,41 @@ kubeconfig: Configured
 ```
 
 ### 156 Parando o Minikube
+
+![/imgs/kubernetes_156.png](/imgs/kubernetes_156.png)
+
+```
+$ minikube stop  
+✋  Stopping node "minikube"  ...
+🛑  Powering off "minikube" via SSH ...
+🛑  1 node stopped.
+
+```
+
 ### 157 Acessando a Dashboard
+
+![/imgs/kubernetes_157.png](/imgs/kubernetes_157.png)
+
+```
+$ minikube dashboard      
+🤔  Verifying dashboard health ...
+🚀  Launching proxy ...
+🤔  Verifying proxy health ...
+🎉  Opening http://127.0.0.1:40291/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/ in your default browser...
+👉  http://127.0.0.1:40291/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/
+
+```
+
 ### 158 Deployment na teoria
+
+![/imgs/kubernetes_158.png](/imgs/kubernetes_158.png)
+
 ### 159 Criando nosso projeto
+
+![/imgs/kubernetes_159.png](/imgs/kubernetes_159.png)
+
+
+
 ### 160 Criando o Deployment
 ### 161 Verificando deployments
 ### 162 Checando pods
