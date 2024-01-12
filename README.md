@@ -2801,11 +2801,88 @@ service is already attached to network swarm
 
 ### 149 Introdução da seção
 ### 150 O que é Kubernetes?
+
+![/imgs/kubernetes_150.png](/imgs/kubernetes_150.png)
+
 ### 151 Conceitos fundamentais
+
+![/imgs/kubernetes_151.png](/imgs/kubernetes_151.png)
+
 ### 152 Dependências necessárias
+
+![/imgs/kubernetes_152.png](/imgs/kubernetes_152.png)
+
 ### 153 Instalação Kubernetes no Windows
+
+![/imgs/kubernetes_153.png](/imgs/kubernetes_153.png)
+
 ### 154 Instalação Kubernetes no Linux
+
+![/imgs/kubernetes_154.png](/imgs/kubernetes_154.png)
+
+```
+$ kubectl version
+Client Version: v1.28.2
+Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
+Server Version: v1.28.2
+
+$ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 28.9M  100 28.9M    0     0  13.2M      0  0:00:02  0:00:02 --:--:-- 13.3M
+
+$ sudo dpkg -i minikube_latest_amd64.deb
+[sudo] password for josemalcher:
+Selecting previously unselected package minikube.
+(Reading database ... 25682 files and directories currently installed.)
+Preparing to unpack minikube_latest_amd64.deb ...
+Unpacking minikube (1.32.0-0) ...
+Setting up minikube (1.32.0-0) ...
+
+
+```
+
 ### 155 Inicializando o Minikube
+
+![/imgs/kubernetes_155.png](/imgs/kubernetes_155.png)
+
+
+```
+$ minikube start
+😄  minikube v1.32.0 on Ubuntu 22.04 (amd64)
+✨  Automatically selected the docker driver. Other choices: none, ssh
+📌  Using Docker driver with root privileges
+❗  For an improved experience it's recommended to use Docker Engine instead of Docker Desktop.
+Docker Engine installation instructions: https://docs.docker.com/engine/install/#server
+👍  Starting control plane node minikube in cluster minikube
+🚜  Pulling base image ...
+💾  Downloading Kubernetes v1.28.3 preload ...
+    > preloaded-images-k8s-v18-v1...:  403.35 MiB / 403.35 MiB  100.00% 24.13 M
+    > gcr.io/k8s-minikube/kicbase...:  453.90 MiB / 453.90 MiB  100.00% 17.71 M
+🔥  Creating docker container (CPUs=2, Memory=2200MB) ...
+🐳  Preparing Kubernetes v1.28.3 on Docker 24.0.7 ...
+    ▪ Generating certificates and keys ...
+    ▪ Booting up control plane ...
+    ▪ Configuring RBAC rules ...
+🔗  Configuring bridge CNI (Container Networking Interface) ...
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌟  Enabled addons: storage-provisioner, default-storageclass
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+
+```
+
+```
+$ minikube status
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+```
+
 ### 156 Parando o Minikube
 ### 157 Acessando a Dashboard
 ### 158 Deployment na teoria
