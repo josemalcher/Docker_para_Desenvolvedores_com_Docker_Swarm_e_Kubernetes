@@ -2917,7 +2917,34 @@ $ minikube dashboard
 
 ![/imgs/kubernetes_159.png](/imgs/kubernetes_159.png)
 
+```
+~/Secao-9-Orquestracao_com_Kubernetes/1_projeto
+$ docker build -t josemalcher/flask-kub-projeto .
+[+] Building 45.8s (10/10) FINISHED                                                                                                                     docker:default
+ => [internal] load build definition from Dockerfile                                                                                                              0.0s
+ => => transferring dockerfile: 256B                                                                                                                              0.0s 
+ => [internal] load .dockerignore                                                                                                                                 0.0s 
+ => => transferring context: 2B                                                                                                                                   0.0s 
+ => [internal] load metadata for docker.io/library/python:3 
+```
 
+```
+$ docker run -d -p 5000:5000 --name flask-kub --rm josemalcher/flask-kub-projeto
+9d4b3c41fe730885a21aff725c30b6c4ad2d96b32053596f821a7f14db7bada7
+
+$ docker ps                                                                     
+CONTAINER ID   IMAGE                           COMMAND             CREATED         STATUS         PORTS                    NAMES
+9d4b3c41fe73   josemalcher/flask-kub-projeto   "python ./app.py"   5 seconds ago   Up 4 seconds   0.0.0.0:5000->5000/tcp   flask-kub
+
+
+```
+
+```
+$ docker push josemalcher/flask-kub-projeto              
+Using default tag: latest
+The push refers to repository [docker.io/josemalcher/flask-kub-projeto]
+
+```
 
 ### 160 Criando o Deployment
 ### 161 Verificando deployments
