@@ -2947,6 +2947,15 @@ The push refers to repository [docker.io/josemalcher/flask-kub-projeto]
 ```
 
 ### 160 Criando o Deployment
+
+![/imgs/kubernetes_160.png](/imgs/kubernetes_160.png)
+
+```
+$ kubectl create deployment flask-deployment --image=josemalcher/flask-kub-projeto
+deployment.apps/flask-deployment created
+
+```
+
 ### 161 Verificando deployments
 ### 162 Checando pods
 ### 163 Configurações do Kubernetes
