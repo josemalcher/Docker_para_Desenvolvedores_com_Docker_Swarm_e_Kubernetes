@@ -2957,11 +2957,213 @@ deployment.apps/flask-deployment created
 ```
 
 ### 161 Verificando deployments
+
+![/imgs/kubernetes_161.png](/imgs/kubernetes_161.png)
+
+```
+$ kubectl get deployments                                                         
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+flask-deployment   1/1     1            1           14h
+
+```
+
+```
+$ kubectl describe deployments
+Name:                   flask-deployment
+Namespace:              default
+CreationTimestamp:      Tue, 16 Jan 2024 20:18:31 -0300
+Labels:                 app=flask-deployment
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=flask-deployment
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=flask-deployment
+  Containers:
+   flask-kub-projeto:
+    Image:        josemalcher/flask-kub-projeto
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   flask-deployment-67f7c8c678 (1/1 replicas created)
+Events:          <none>
+
+```
+
 ### 162 Checando pods
+
+![/imgs/kubernetes_162.png](/imgs/kubernetes_162.png)
+
+```
+$ kubectl get deployments
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+flask-deployment   1/1     1            1           14h
+
+$ kubectl get pods       
+NAME                                READY   STATUS    RESTARTS   AGE
+flask-deployment-67f7c8c678-ltmr7   1/1     Running   0          14h
+
+```
+
+```
+$ kubectl describe pods  
+Name:             flask-deployment-67f7c8c678-ltmr7
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Tue, 16 Jan 2024 20:18:31 -0300
+Labels:           app=flask-deployment
+                  pod-template-hash=67f7c8c678
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.9
+IPs:
+  IP:           10.244.0.9
+Controlled By:  ReplicaSet/flask-deployment-67f7c8c678
+Containers:
+  flask-kub-projeto:
+    Container ID:   docker://36413ffc69823eb18a27b9f6f54fa4f2eec7fa10b4500171fc4dc3e465eb0ffb
+    Image:          josemalcher/flask-kub-projeto
+    Image ID:       docker-pullable://josemalcher/flask-kub-projeto@sha256:5ab5a881a74a4b675650b4da67fd1bd56032de62a2d087d65e90c9482b86c9be
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Tue, 16 Jan 2024 20:19:02 -0300
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-crhzx (ro)
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Volumes:
+  kube-api-access-crhzx:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:                      <none>
+
+
+```
+
 ### 163 Configurações do Kubernetes
+
+![/imgs/kubernetes_163.png](/imgs/kubernetes_163.png)
+
+```
+$ kubectl config view                                                             
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: DATA+OMITTED
+    server: https://kubernetes.docker.internal:6443
+  name: docker-desktop
+- cluster:
+    certificate-authority: /home/josemalcher/.minikube/ca.crt
+    extensions:
+    - extension:
+        last-update: Tue, 16 Jan 2024 20:17:32 -03
+        provider: minikube.sigs.k8s.io
+        version: v1.32.0
+      name: cluster_info
+    server: https://127.0.0.1:62363
+  name: minikube
+contexts:
+- context:
+    cluster: docker-desktop
+    user: docker-desktop
+  name: docker-desktop
+- context:
+    cluster: minikube
+    extensions:
+    - extension:
+        last-update: Tue, 16 Jan 2024 20:17:32 -03
+        provider: minikube.sigs.k8s.io
+        version: v1.32.0
+      name: context_info
+    namespace: default
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: docker-desktop
+  user:
+    client-certificate-data: DATA+OMITTED
+    client-key-data: DATA+OMITTED
+- name: minikube
+  user:
+    client-certificate: /home/josemalcher/.minikube/profiles/minikube/client.crt
+    client-key: /home/josemalcher/.minikube/profiles/minikube/client.key
+
+
+```
+
 ### 164 Services na teoria
+
+![/imgs/kubernetes_164.png](/imgs/kubernetes_164.png)
+
 ### 165 Criando um Service
+
+![/imgs/kubernetes_165.png](/imgs/kubernetes_165.png)
+
+```
+$ kubectl get deployments
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+flask-deployment   1/1     1            1           17h
+```
+
+```
+$ kubectl expose deployment flask-deployment --type=LoadBalancer --port=5000
+service/flask-deployment exposed
+
+```
+
 ### 166 Gerando um IP para o Service
+
+![/imgs/kubernetes_166.png](/imgs/kubernetes_166.png)
+
+```
+$ minikube service flask-deployment
+|-----------|------------------|-------------|---------------------------|
+| NAMESPACE |       NAME       | TARGET PORT |            URL            |
+|-----------|------------------|-------------|---------------------------|
+| default   | flask-deployment |        5000 | http://192.168.49.2:30417 |
+|-----------|------------------|-------------|---------------------------|
+🏃  Starting tunnel for service flask-deployment.
+|-----------|------------------|-------------|------------------------|
+| NAMESPACE |       NAME       | TARGET PORT |          URL           |
+|-----------|------------------|-------------|------------------------|
+| default   | flask-deployment |             | http://127.0.0.1:35087 |
+|-----------|------------------|-------------|------------------------|
+🎉  Opening service default/flask-deployment in default browser...
+👉  http://127.0.0.1:35087
+❗  Because you are using a Docker driver on linux, the terminal needs to be open to run it.
+
+```
+
 ### 167 Detalhes dos services
 ### 168 Escalando aplicação
 ### 169 Verificando número de réplicas
