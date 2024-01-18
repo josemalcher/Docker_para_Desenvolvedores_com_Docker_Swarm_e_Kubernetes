@@ -3165,9 +3165,112 @@ $ minikube service flask-deployment
 ```
 
 ### 167 Detalhes dos services
+
+![/imgs/kubernetes_167.png](/imgs/kubernetes_167.png)
+
+```
+$ kubectl get services                                                      
+NAME               TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+flask-deployment   LoadBalancer   10.98.244.102   <pending>     5000:30417/TCP   29h
+kubernetes         ClusterIP      10.96.0.1       <none>        443/TCP          6d7h
+
+```
+
+```
+$ kubectl describe services/flask-deployment
+Name:                     flask-deployment
+Namespace:                default
+Labels:                   app=flask-deployment
+Annotations:              <none>
+Selector:                 app=flask-deployment
+Type:                     LoadBalancer
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.98.244.102
+IPs:                      10.98.244.102
+Port:                     <unset>  5000/TCP
+TargetPort:               5000/TCP
+NodePort:                 <unset>  30417/TCP
+Endpoints:                10.244.0.9:5000
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+
+
+```
+
 ### 168 Escalando aplicação
+
+![/imgs/kubernetes_168.png](/imgs/kubernetes_168.png)
+
+```
+$ kubectl get pods                          
+NAME                                READY   STATUS    RESTARTS   AGE
+flask-deployment-67f7c8c678-ltmr7   1/1     Running   0          47h
+
+```
+
+```
+$ kubectl scale deployment/flask-deployment --replicas=5                        
+deployment.apps/flask-deployment scaled
+
+```
+
+```
+$ kubectl get pods                                      
+NAME                                READY   STATUS              RESTARTS   AGE
+flask-deployment-67f7c8c678-6zc64   0/1     ContainerCreating   0          3s
+flask-deployment-67f7c8c678-8fx5f   0/1     ContainerCreating   0          3s
+flask-deployment-67f7c8c678-ltmr7   1/1     Running             0          47h
+flask-deployment-67f7c8c678-mwwd2   0/1     ContainerCreating   0          3s
+flask-deployment-67f7c8c678-vn5dw   0/1     ContainerCreating   0          3s
+
+$ kubectl get pods
+NAME                                READY   STATUS    RESTARTS   AGE
+flask-deployment-67f7c8c678-6zc64   1/1     Running   0          94s
+flask-deployment-67f7c8c678-8fx5f   1/1     Running   0          94s
+flask-deployment-67f7c8c678-ltmr7   1/1     Running   0          47h
+flask-deployment-67f7c8c678-mwwd2   1/1     Running   0          94s
+flask-deployment-67f7c8c678-vn5dw   1/1     Running   0          94s
+
+```
+
 ### 169 Verificando número de réplicas
+
+![/imgs/kubernetes_169.png](/imgs/kubernetes_169.png)
+
+```
+$ kubectl get rs  
+NAME                          DESIRED   CURRENT   READY   AGE
+flask-deployment-67f7c8c678   5         5         5       47h
+
+```
+
 ### 170 Diminuir número de réplicas
+
+![/imgs/kubernetes_170.png](/imgs/kubernetes_170.png)
+
+```
+$ kubectl get pods
+NAME                                READY   STATUS    RESTARTS   AGE
+flask-deployment-67f7c8c678-6zc64   1/1     Running   0          12m
+flask-deployment-67f7c8c678-8fx5f   1/1     Running   0          12m
+flask-deployment-67f7c8c678-ltmr7   1/1     Running   0          47h
+flask-deployment-67f7c8c678-mwwd2   1/1     Running   0          12m
+flask-deployment-67f7c8c678-vn5dw   1/1     Running   0          12m
+
+$ kubectl scale deployment/flask-deployment --replicas=3
+deployment.apps/flask-deployment scaled
+
+$ kubectl get pods                                      
+NAME                                READY   STATUS    RESTARTS   AGE
+flask-deployment-67f7c8c678-8fx5f   1/1     Running   0          12m
+flask-deployment-67f7c8c678-ltmr7   1/1     Running   0          47h
+flask-deployment-67f7c8c678-mwwd2   1/1     Running   0          12m
+
+```
+
+
 ### 171 Atualizando a imagem do projeto
 ### 172 Desfazer alteração de projeto
 ### 173 Deletando Services
