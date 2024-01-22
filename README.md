@@ -3423,14 +3423,340 @@ No resources found in default namespace.
 
 
 ### 176 Chaves mais utilizadas do modo declarativo
+
+![/imgs/kubernetes_176.png](/imgs/kubernetes_176.png)
+
 ### 177 Criando nosso arquivo
+
+![/imgs/kubernetes_177.png](/imgs/kubernetes_177.png)
+
+```
+$ kubectl get pods                                                                                  
+No resources found in default namespace.
+
+
+$ kubectl get services
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   10d
+
+
+```
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app-depoyment
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+        - name: flask
+          image: josemalcher/flask-kub-projeto
+```
+
 ### 178 Rodando o arquivo do projeto
+
+![/imgs/kubernetes_178.png](/imgs/kubernetes_178.png)
+
+```
+$ minikube start    
+😄  minikube v1.32.0 on Ubuntu 22.04 (amd64)
+✨  Using the docker driver based on existing profile
+👍  Starting control plane node minikube in cluster minikube
+🚜  Pulling base image ...
+🏃  Updating the running docker "minikube" container ...
+🐳  Preparing Kubernetes v1.28.3 on Docker 24.0.7 ...
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+    ▪ Using image docker.io/kubernetesui/dashboard:v2.7.0
+    ▪ Using image docker.io/kubernetesui/metrics-scraper:v1.0.8
+💡  Some dashboard features require the metrics-server addon. To enable all features please run:
+
+        minikube addons enable metrics-server
+
+
+🌟  Enabled addons: storage-provisioner, default-storageclass, dashboard
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+
+
+
+$ kubectl apply -f flask.yaml 
+deployment.apps/flask-app-depoyment created
+
+
+$ kubectl get pods           
+NAME                                 READY   STATUS    RESTARTS   AGE
+flask-app-depoyment-c7666b5c-cpp7q   1/1     Running   0          22s
+flask-app-depoyment-c7666b5c-kh6lp   1/1     Running   0          22s
+flask-app-depoyment-c7666b5c-nljj2   1/1     Running   0          22s
+flask-app-depoyment-c7666b5c-rl599   1/1     Running   0          22s
+
+```
+
 ### 179 Parando o deployment
+
+![/imgs/kubernetes_179.png](/imgs/kubernetes_179.png)
+
+```
+$ kubectl get pods  
+NAME                                 READY   STATUS    RESTARTS   AGE
+flask-app-depoyment-c7666b5c-cpp7q   1/1     Running   0          3m33s
+flask-app-depoyment-c7666b5c-kh6lp   1/1     Running   0          3m33s
+flask-app-depoyment-c7666b5c-nljj2   1/1     Running   0          3m33s
+flask-app-depoyment-c7666b5c-rl599   1/1     Running   0          3m33s
+
+
+$ kubectl delete -f flask.yaml              
+deployment.apps "flask-app-depoyment" deleted
+
+
+$ kubectl get pods            
+No resources found in default namespace.
+
+```
+
 ### 180 Criando o arquivo de service
+
+![/imgs/kubernetes_180.png](/imgs/kubernetes_180.png)
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service
+spec:
+  selector:
+    app: flask-app
+  ports:
+    - protocol: 'TCP'
+      port: 5000
+      targetPort: 5000
+  type: LoadBalancer
+```
+
 ### 181 Iniciando o service
+
+![/imgs/kubernetes_181.png](/imgs/kubernetes_181.png)
+
+```
+$ kubectl get services
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   10d
+
+
+$ kubectl apply -f flask-service.yaml 
+service/flask-service created
+
+
+$ kubectl get services               
+NAME            TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+flask-service   LoadBalancer   10.101.60.60   <pending>     5000:32386/TCP   2s
+kubernetes      ClusterIP      10.96.0.1      <none>        443/TCP          10d
+
+
+```
+
+```
+$ minikube service flask-service   
+|-----------|---------------|-------------|---------------------------|
+| NAMESPACE |     NAME      | TARGET PORT |            URL            |
+|-----------|---------------|-------------|---------------------------|
+| default   | flask-service |        5000 | http://192.168.49.2:32386 |
+|-----------|---------------|-------------|---------------------------|
+🏃  Starting tunnel for service flask-service.
+|-----------|---------------|-------------|------------------------|
+| NAMESPACE |     NAME      | TARGET PORT |          URL           |
+|-----------|---------------|-------------|------------------------|
+| default   | flask-service |             | http://127.0.0.1:44835 |
+|-----------|---------------|-------------|------------------------|
+🎉  Opening service default/flask-service in default browser...
+👉  http://127.0.0.1:44835
+❗  Because you are using a Docker driver on linux, the terminal needs to be open to run it.
+
+
+```
+
 ### 182 Parando o serviço
+
+![/imgs/kubernetes_182.png](/imgs/kubernetes_182.png)
+
+
+```
+$ kubectl get services                  
+NAME            TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+flask-service   LoadBalancer   10.101.60.60   <pending>     5000:32386/TCP   3m8s
+kubernetes      ClusterIP      10.96.0.1      <none>        443/TCP          10d
+
+
+$ kubectl delete -f flask-service.yaml                                                                                                                                                                     
+service "flask-service" deleted
+
+
+$ kubectl get services                
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   10d
+
+$ kubectl get pods                                                                                  
+NAME                                 READY   STATUS    RESTARTS   AGE
+flask-app-depoyment-c7666b5c-78ltv   1/1     Running   0          16m
+flask-app-depoyment-c7666b5c-kjz5t   1/1     Running   0          16m
+flask-app-depoyment-c7666b5c-sjn7k   1/1     Running   0          16m
+flask-app-depoyment-c7666b5c-sstkq   1/1     Running   0          16m
+
+```
+
 ### 183 Atualizando o projeto
+
+![/imgs/kubernetes_183.png](/imgs/kubernetes_183.png)
+
+
+```
+$ docker build -t josemalcher/flask-kub-projeto:5 .
+[+] Building 2.0s (11/11) FINISHED                                                                                                                                                          docker:default
+
+
+$ docker push josemalcher/flask-kub-projeto:5       
+The push refers to repository [docker.io/josemalcher/flask-kub-projeto]
+f145cd9d397d: Pushed
+
+```
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app-depoyment
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+        - name: flask
+          image: josemalcher/flask-kub-projeto:5
+```
+
+```
+$ kubectl apply -f flask.yaml        
+deployment.apps/flask-app-depoyment configured
+
+
+$ kubectl get pods           
+NAME                                   READY   STATUS              RESTARTS   AGE
+flask-app-depoyment-7f66d6596b-fqt6d   0/1     ContainerCreating   0          23s
+flask-app-depoyment-7f66d6596b-nthh8   0/1     ContainerCreating   0          23s
+flask-app-depoyment-c7666b5c-kjz5t     1/1     Running             0          22m
+flask-app-depoyment-c7666b5c-sjn7k     1/1     Running             0          22m
+flask-app-depoyment-c7666b5c-sstkq     1/1     Running             0          22m
+
+
+```
+
 ### 184 Unindo arquivos
+
+![/imgs/kubernetes_184.png](/imgs/kubernetes_184.png)
+
+```
+$ kubectl delete -f flask-service.yaml
+
+$ kubectl delete -f flask.yaml        
+deployment.apps "flask-app-depoyment" deleted
+
+
+$ kubectl get pods            
+No resources found in default namespace.
+
+$ kubectl get services
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   10d
+
+```
+
+```
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service
+spec:
+  selector:
+    app: flask-app
+  ports:
+    - protocol: 'TCP'
+      port: 5000
+      targetPort: 5000
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app-depoyment
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+        - name: flask
+          image: matheusbattisti/flask-kub-projeto:5
+```
+
+```
+$ kubectl apply -f flask-project.yaml 
+service/flask-service created
+deployment.apps/flask-app-depoyment created
+
+```
+
+```
+$ kubectl get pods                   
+NAME                                   READY   STATUS              RESTARTS   AGE
+flask-app-depoyment-685886c4d4-gvbbj   0/1     ContainerCreating   0          12s
+flask-app-depoyment-685886c4d4-km865   0/1     ContainerCreating   0          12s
+flask-app-depoyment-685886c4d4-mp5f4   0/1     ContainerCreating   0          12s
+flask-app-depoyment-685886c4d4-wdq55   0/1     ContainerCreating   0          12s
+
+$ kubectl get services               
+NAME            TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+flask-service   LoadBalancer   10.102.131.192   <pending>     5000:32566/TCP   20s
+kubernetes      ClusterIP      10.96.0.1        <none>        443/TCP          10d
+
+$ minikube service flask-service                   
+|-----------|---------------|-------------|---------------------------|
+| NAMESPACE |     NAME      | TARGET PORT |            URL            |
+|-----------|---------------|-------------|---------------------------|
+| default   | flask-service |        5000 | http://192.168.49.2:32566 |
+|-----------|---------------|-------------|---------------------------|
+🏃  Starting tunnel for service flask-service.
+|-----------|---------------|-------------|------------------------|
+| NAMESPACE |     NAME      | TARGET PORT |          URL           |
+|-----------|---------------|-------------|------------------------|
+| default   | flask-service |             | http://127.0.0.1:37161 |
+|-----------|---------------|-------------|------------------------|
+🎉  Opening service default/flask-service in default browser...
+👉  http://127.0.0.1:37161
+❗  Because you are using a Docker driver on linux, the terminal needs to be open to run it.
+
+```
+
 ### 185 Conclusão da seção
 
 [Voltar ao Índice](#indice)
