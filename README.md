@@ -3272,10 +3272,156 @@ flask-deployment-67f7c8c678-mwwd2   1/1     Running   0          12m
 
 
 ### 171 Atualizando a imagem do projeto
+
+![/imgs/kubernetes_171.png](/imgs/kubernetes_171.png)
+
+```
+$ docker build -t josemalcher/flask-kub-projeto .
+
+```
+
+```
+$ docker push josemalcher/flask-kub-projeto:2    
+The push refers to repository [docker.io/josemalcher/flask-kub-projeto]
+tag does not exist: josemalcher/flask-kub-projeto:2
+
+```
+
+```
+$ kubectl set image deployment/flask-deployment flask-kub-projeto=josemalcher/flask-kub-projeto:2
+deployment.apps/flask-deployment image updated
+```
+
+```
+$ kubectl get deployments                                                                        
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+flask-deployment   3/3     1            3           5d13h
+
+```
+
+```
+$ kubectl get pods       
+NAME                                READY   STATUS             RESTARTS      AGE
+flask-deployment-67f7c8c678-8fx5f   1/1     Running            1 (11m ago)   3d14h
+flask-deployment-67f7c8c678-ltmr7   1/1     Running            1 (11m ago)   5d13h
+flask-deployment-67f7c8c678-mwwd2   1/1     Running            1 (11m ago)   3d14h
+flask-deployment-755c6c59f8-8fwzb   0/1     ImagePullBackOff   0             57s
+
+```
+
+
 ### 172 Desfazer alteração de projeto
+
+![/imgs/kubernetes_172.png](/imgs/kubernetes_172.png)
+
+```
+$ kubectl get pods
+NAME                                READY   STATUS             RESTARTS      AGE
+flask-deployment-67f7c8c678-8fx5f   1/1     Running            1 (55m ago)   3d14h
+flask-deployment-67f7c8c678-ltmr7   1/1     Running            1 (55m ago)   5d14h
+flask-deployment-67f7c8c678-mwwd2   1/1     Running            1 (55m ago)   3d14h
+flask-deployment-755c6c59f8-8fwzb   0/1     ImagePullBackOff   0             44m
+
+```
+
+```
+$ kubectl rollout status deployment/flask-deployment
+error: deployment "flask-deployment" exceeded its progress deadline
+
+```
+
+```
+$ kubectl rollout undo deployment/flask-deployment
+deployment.apps/flask-deployment rolled back
+
+```
+
+```
+$ kubectl get pods                                  
+NAME                                READY   STATUS    RESTARTS      AGE
+flask-deployment-67f7c8c678-8fx5f   1/1     Running   1 (58m ago)   3d14h
+flask-deployment-67f7c8c678-ltmr7   1/1     Running   1 (58m ago)   5d14h
+flask-deployment-67f7c8c678-mwwd2   1/1     Running   1 (58m ago)   3d14h
+
+```
+
+```
+$ kubectl rollout status deployment/flask-deployment
+deployment "flask-deployment" successfully rolled out
+
+```
+
 ### 173 Deletando Services
+
+![/imgs/kubernetes_173.png](/imgs/kubernetes_173.png)
+
+```
+$ kubectl get services                              
+NAME               TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+flask-deployment   LoadBalancer   10.98.244.102   <pending>     5000:30417/TCP   4d20h
+kubernetes         ClusterIP      10.96.0.1       <none>        443/TCP          9d
+
+```
+
+```
+$ kubectl delete service flask-deployment   
+service "flask-deployment" deleted
+
+```
+
+```
+$ kubectl get services                   
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   9d
+
+```
+
+```
+$ kubectl get pods    
+NAME                                READY   STATUS    RESTARTS      AGE
+flask-deployment-67f7c8c678-8fx5f   1/1     Running   1 (65m ago)   3d15h
+flask-deployment-67f7c8c678-ltmr7   1/1     Running   1 (65m ago)   5d14h
+flask-deployment-67f7c8c678-mwwd2   1/1     Running   1 (65m ago)   3d15h
+```
+
 ### 174 Deletando Deployments
+
+![/imgs/kubernetes_174.png](/imgs/kubernetes_174.png)
+
+```
+$ kubectl get deployments 
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+flask-deployment   3/3     3            3           5d14h
+
+
+$ kubectl get pods       
+NAME                                READY   STATUS    RESTARTS      AGE
+flask-deployment-67f7c8c678-8fx5f   1/1     Running   1 (68m ago)   3d15h
+flask-deployment-67f7c8c678-ltmr7   1/1     Running   1 (68m ago)   5d14h
+flask-deployment-67f7c8c678-mwwd2   1/1     Running   1 (68m ago)   3d15h
+
+```
+
+```
+$ kubectl delete deployment flask-deployment
+deployment.apps "flask-deployment" deleted
+
+```
+
+```
+$ kubectl get deployments                   
+No resources found in default namespace.
+
+
+$ kubectl get pods                          
+No resources found in default namespace.
+```
+
 ### 175 Modo declarativo teoria
+
+![/imgs/kubernetes_175.png](/imgs/kubernetes_175.png)
+
+
 ### 176 Chaves mais utilizadas do modo declarativo
 ### 177 Criando nosso arquivo
 ### 178 Rodando o arquivo do projeto
